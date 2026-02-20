@@ -1,0 +1,291 @@
+import { useState, Fragment } from "react";
+import { AnimatePresence, motion } from "framer-motion";
+import usePromptStore from "../../store/usePromptStore";
+import { getShellColors } from "../../utils/shellColors";
+import { NAV_PATTERNS, NAV_FINE_TUNE_DIMS } from "./constants";
+import Icon from "../shared/Icon";
+import NextStepButton from "../shared/NextStepButton";
+
+import ThumbRail from "./thumbnails/ThumbRail";
+import ThumbShelf from "./thumbnails/ThumbShelf";
+import ThumbRibbon from "./thumbnails/ThumbRibbon";
+import ThumbTabs from "./thumbnails/ThumbTabs";
+import ThumbCapsules from "./thumbnails/ThumbCapsules";
+import ThumbBreadcrumb from "./thumbnails/ThumbBreadcrumb";
+import ThumbSpotlight from "./thumbnails/ThumbSpotlight";
+import ThumbDrawer from "./thumbnails/ThumbDrawer";
+
+const THUMB_MAP = {
+  rail: ThumbRail,
+  shelf: ThumbShelf,
+  ribbon: ThumbRibbon,
+  tabs: ThumbTabs,
+  capsules: ThumbCapsules,
+  breadcrumb: ThumbBreadcrumb,
+  spotlight: ThumbSpotlight,
+  drawer: ThumbDrawer,
+};
+
+function DimCard({ dim, value, onChange, expanded, onToggle }) {
+  const shellMode = usePromptStore((s) => s.shellMode);
+  const c = getShellColors(shellMode === "light");
+  const d = NAV_FINE_TUNE_DIMS[dim];
+
+  return (
+    <div style={{
+      borderRadius: 12,
+      overflow: "hidden",
+      background: expanded ? `${d.color}0a` : "rgba(255,255,255,0.04)",
+      border: expanded ? `1px solid ${d.color}25` : `1px solid ${c.panelBorder}`,
+      transition: "all 0.2s",
+    }}>
+      <button onClick={onToggle} style={{
+        width: "100%",
+        padding: "12px 14px",
+        border: "none",
+        cursor: "pointer",
+        fontFamily: "inherit",
+        background: "transparent",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "space-between",
+      }}>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <div style={{ width: 7, height: 7, borderRadius: "50%", background: d.color, boxShadow: `0 0 6px ${d.color}40` }} />
+          <span style={{ fontSize: 12, fontWeight: 700, color: d.color }}>{d.label}</span>
+          <span style={{ fontSize: 10, color: c.muted }}>{d.desc}</span>
+        </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span style={{
+            padding: "3px 10px",
+            borderRadius: 6,
+            fontSize: 10,
+            fontWeight: 600,
+            background: `${d.color}15`,
+            color: d.color,
+            border: `1px solid ${d.color}25`,
+            fontFamily: "'JetBrains Mono', monospace",
+          }}>
+            {d.opts.find((o) => o.id === value)?.label}
+          </span>
+          <Icon name={expanded ? "chevUp" : "chevDown"} size={13} color={c.muted} />
+        </div>
+      </button>
+      {expanded && (
+        <div style={{ padding: "0 14px 14px", display: "flex", gap: 6, flexWrap: "wrap" }}>
+          {d.opts.map((opt) => {
+            const active = value === opt.id;
+            return (
+              <button key={opt.id} onClick={() => onChange(opt.id)} style={{
+                padding: "8px 14px",
+                borderRadius: 8,
+                cursor: "pointer",
+                fontFamily: "inherit",
+                border: active ? `1.5px solid ${d.color}` : `1px solid ${c.panelBorder}`,
+                background: active ? `${d.color}15` : "rgba(255,255,255,0.04)",
+                display: "flex",
+                flexDirection: "column",
+                gap: 2,
+                transition: "all 0.15s",
+                flex: "1 1 calc(50% - 3px)",
+                minWidth: 100,
+              }}>
+                <div style={{ fontSize: 11, fontWeight: 700, color: active ? d.color : c.muted, display: "flex", alignItems: "center", gap: 5 }}>
+                  {active && <Icon name="check" size={11} color={d.color} />}
+                  {opt.label}
+                </div>
+                <div style={{ fontSize: 9, color: c.muted, lineHeight: 1.3, textAlign: "left" }}>{opt.desc}</div>
+              </button>
+            );
+          })}
+        </div>
+      )}
+    </div>
+  );
+}
+
+export default function NavigationSelector() {
+  const navStyle = usePromptStore((s) => s.navStyle);
+  const setNavStyle = usePromptStore((s) => s.setNavStyle);
+  const setNavFineTune = usePromptStore((s) => s.setNavFineTune);
+  const clearNavStyle = usePromptStore((s) => s.clearNavStyle);
+  const shellMode = usePromptStore((s) => s.shellMode);
+  const c = getShellColors(shellMode === "light");
+
+  const [expDim, setExpDim] = useState(null);
+
+  const selectedPattern = navStyle
+    ? NAV_PATTERNS.find((p) => p.id === navStyle.patternId)
+    : null;
+  const fineTune = navStyle?.fineTune || {};
+
+  const selectedIndex = selectedPattern
+    ? NAV_PATTERNS.findIndex((p) => p.id === selectedPattern.id)
+    : -1;
+  const selectedRow = selectedIndex >= 0 ? Math.floor(selectedIndex / 4) : -1;
+  const insertAfterIndex = selectedRow >= 0 ? (selectedRow + 1) * 4 - 1 : -1;
+
+  const SECTION_COLOR = "#67e8f9";
+
+  return (
+    <>
+      {/* Header */}
+      <div style={{ marginBottom: 12 }}>
+        <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>Navigation</div>
+        <div style={{ fontSize: 11, color: c.muted }}>How users move through your app</div>
+      </div>
+
+      {/* Pattern grid with inline fine-tune */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
+        {NAV_PATTERNS.map((pattern, i) => {
+          const active = selectedPattern?.id === pattern.id;
+          const Thumb = THUMB_MAP[pattern.id];
+
+          return (
+            <Fragment key={pattern.id}>
+              <button
+                onClick={() => active ? clearNavStyle() : setNavStyle(pattern)}
+                style={{
+                  padding: 0,
+                  borderRadius: 12,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  border: active ? `2px solid ${SECTION_COLOR}` : `1px solid ${c.panelBorder}`,
+                  background: active ? `${SECTION_COLOR}08` : "rgba(255,255,255,0.03)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  transition: "all 0.15s",
+                  boxShadow: active ? `0 4px 20px ${SECTION_COLOR}20` : "none",
+                  textAlign: "left",
+                  position: "relative",
+                }}
+              >
+                {/* Thumbnail preview */}
+                <div style={{ height: 50, overflow: "hidden" }}>
+                  {Thumb && <Thumb accent={pattern.color} />}
+                </div>
+
+                {/* Label + tagline */}
+                <div style={{
+                  padding: "8px 8px",
+                  borderTop: `1px solid ${active ? `${SECTION_COLOR}25` : c.panelBorder}`,
+                }}>
+                  <div style={{
+                    fontSize: 10,
+                    fontWeight: 700,
+                    color: active ? c.text : c.muted,
+                    marginBottom: 2,
+                  }}>
+                    {pattern.label}
+                  </div>
+                  <div style={{
+                    fontSize: 8,
+                    color: c.muted,
+                    lineHeight: 1.3,
+                    opacity: active ? 0.8 : 0.5,
+                  }}>
+                    {pattern.tagline}
+                  </div>
+                </div>
+
+                {/* Check badge */}
+                {active && (
+                  <div style={{
+                    position: "absolute",
+                    top: 4,
+                    right: 4,
+                    width: 16,
+                    height: 16,
+                    borderRadius: 4,
+                    background: SECTION_COLOR,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}>
+                    <Icon name="check" size={9} color="#0c0e14" />
+                  </div>
+                )}
+              </button>
+
+              {/* Inline fine-tune expansion */}
+              {i === insertAfterIndex && selectedPattern && (
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={"ft-" + selectedPattern.id}
+                    style={{ gridColumn: "1 / -1", overflow: "hidden" }}
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    transition={{ duration: 0.25, ease: [0.25, 0.1, 0.25, 1] }}
+                  >
+                    <div style={{
+                      padding: "16px 14px",
+                      borderRadius: 12,
+                      background: `${SECTION_COLOR}06`,
+                      border: `1px solid ${SECTION_COLOR}18`,
+                      marginTop: 4,
+                    }}>
+                      {/* Fine-tune header */}
+                      <div style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        marginBottom: 12,
+                      }}>
+                        <Icon name="sliders" size={14} color={SECTION_COLOR} />
+                        <span style={{ fontSize: 13, fontWeight: 700, color: c.text }}>
+                          Fine-Tune{" "}
+                          <span style={{ color: SECTION_COLOR }}>{selectedPattern.label}</span>
+                        </span>
+                        {navStyle?.custom && (
+                          <span style={{
+                            padding: "2px 8px",
+                            borderRadius: 5,
+                            fontSize: 9,
+                            fontWeight: 700,
+                            background: `${SECTION_COLOR}15`,
+                            color: SECTION_COLOR,
+                            border: `1px solid ${SECTION_COLOR}25`,
+                          }}>Custom</span>
+                        )}
+                        <div style={{ flex: 1 }} />
+                        <div style={{ display: "flex", gap: 4 }}>
+                          {selectedPattern.dims.map((dimId) => (
+                            <div key={dimId} style={{
+                              width: 8,
+                              height: 8,
+                              borderRadius: "50%",
+                              background: NAV_FINE_TUNE_DIMS[dimId].color,
+                              opacity: 0.6,
+                            }} />
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Dim cards */}
+                      <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
+                        {selectedPattern.dims.map((dimId) => (
+                          <DimCard
+                            key={dimId}
+                            dim={dimId}
+                            value={fineTune[dimId]}
+                            onChange={(v) => setNavFineTune(dimId, v)}
+                            expanded={expDim === dimId}
+                            onToggle={() => setExpDim(expDim === dimId ? null : dimId)}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
+                </AnimatePresence>
+              )}
+            </Fragment>
+          );
+        })}
+      </div>
+
+      <NextStepButton targetCategory="buttons" label="Buttons" />
+    </>
+  );
+}

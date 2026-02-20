@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pintuck — Craft the vibe. Copy the prompt.</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800;900&family=DM+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden}
+body{
+  background:#06060a;color:#f0ede6;font-family:'DM Sans',sans-serif;
+  display:flex;flex-direction:column;
+}
+
+.grid-bg{
+  position:fixed;inset:0;
+  background-image:
+    linear-gradient(rgba(99,102,241,0.025) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(99,102,241,0.025) 1px,transparent 1px);
+  background-size:48px 48px;
+  mask:radial-gradient(ellipse at 50% 35%,black 15%,transparent 65%);
+  -webkit-mask:radial-gradient(ellipse at 50% 35%,black 15%,transparent 65%);
+  pointer-events:none;z-index:0;
+}
+
+/* ============ HERO ============ */
+.hero{
+  flex:0 0 auto;
+  display:flex;flex-direction:column;align-items:center;
+  padding:24px 24px 0;
+  position:relative;z-index:1;
+}
+
+.terminal-intro{
+  background:rgba(30,33,48,0.5);
+  border:1px solid rgba(99,102,241,0.12);
+  border-radius:8px;padding:7px 18px;
+  font-family:'JetBrains Mono';font-size:11px;
+  color:rgba(240,237,230,0.5);margin-bottom:14px;
+  display:flex;align-items:center;gap:8px;
+  animation:fadeUp 0.5s ease-out both;
+}
+.dollar{color:#6ee7b7;font-weight:700}
+.cmd{color:rgba(240,237,230,0.65)}
+.cursor-blink{
+  display:inline-block;width:2px;height:13px;background:#818cf8;
+  margin-left:3px;animation:blink 1s step-end infinite;
+}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+
+.brand-row{
+  display:flex;align-items:center;gap:18px;margin-bottom:4px;
+  animation:fadeUp 0.5s ease-out 0.1s both;
+}
+.mascot{
+  filter:drop-shadow(0 8px 30px rgba(99,102,241,0.2));
+  animation:wiggle 4s ease-in-out 1.2s infinite;
+}
+@keyframes wiggle{0%,100%{transform:translateY(0) rotate(0)}25%{transform:translateY(-4px) rotate(-0.8deg)}75%{transform:translateY(-2px) rotate(0.4deg)}}
+.wordmark{
+  font-family:'Outfit';font-weight:800;font-size:52px;letter-spacing:-1.5px;
+  color:#e0e7ff;line-height:1;
+}
+
+.tagline{
+  font-size:15px;font-style:italic;color:rgba(240,237,230,0.55);
+  margin-bottom:14px;letter-spacing:0.3px;
+  animation:fadeUp 0.5s ease-out 0.2s both;
+}
+
+.cta{
+  display:inline-flex;align-items:center;gap:8px;
+  background:linear-gradient(135deg,#4338ca,#6366f1);
+  color:#e0e7ff;border:none;
+  padding:12px 30px;border-radius:12px;
+  font-family:'DM Sans';font-size:15px;font-weight:600;
+  cursor:pointer;transition:all 0.3s ease;
+  box-shadow:0 4px 20px rgba(67,56,202,0.3);
+  letter-spacing:0.3px;position:relative;overflow:hidden;
+  animation:fadeUp 0.5s ease-out 0.3s both;
+}
+.cta::after{content:'';position:absolute;inset:0;background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,0.06))}
+.cta:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(99,102,241,0.4)}
+
+/* ============ HOW IT WORKS DIVIDER ============ */
+.divider{
+  flex:0 0 auto;
+  display:flex;align-items:center;gap:16px;
+  padding:16px 48px;
+  position:relative;z-index:1;
+  animation:fadeUp 0.5s ease-out 0.4s both;
+}
+.div-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(99,102,241,0.12),transparent)}
+.div-label{
+  font-family:'Outfit';font-size:14px;font-weight:700;
+  letter-spacing:1px;text-transform:uppercase;
+  color:#c7d2fe;white-space:nowrap;
+}
+
+/* ============ STEPS ============ */
+.how{
+  flex:1;display:flex;flex-direction:column;
+  padding:0 32px;position:relative;z-index:1;
+  min-height:0;gap:8px;
+}
+
+.steps-row{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+  flex:1;min-height:0;
+  animation:fadeUp 0.5s ease-out 0.5s both;
+}
+
+.step{
+  background:rgba(14,17,24,0.5);
+  border:1px solid rgba(255,255,255,0.05);
+  border-radius:14px;padding:18px 18px 14px;
+  display:flex;flex-direction:column;
+  transition:transform 0.3s ease, border-color 0.3s ease;
+  overflow:hidden;
+}
+.step:hover{transform:translateY(-2px);border-color:rgba(99,102,241,0.1)}
+
+.step-head{display:flex;align-items:baseline;gap:10px;margin-bottom:5px}
+.step-num{
+  font-family:'Outfit';font-weight:800;font-size:26px;line-height:1;
+  color:rgba(129,140,248,0.3);
+}
+.step-title{
+  font-family:'Outfit';font-weight:700;font-size:15px;
+  color:#e0e7ff;
+}
+.step-desc{
+  font-size:13px;line-height:1.5;color:rgba(240,237,230,0.6);
+  margin-bottom:6px;
+}
+
+/* Step 1 pills */
+.config-pills{display:flex;flex-wrap:wrap;gap:5px;margin-top:auto}
+.pill{
+  font-family:'JetBrains Mono';font-size:9px;font-weight:600;
+  letter-spacing:0.5px;padding:3px 8px;border-radius:5px;border:1px solid;
+}
+.pill-theme{color:#818cf8;border-color:rgba(129,140,248,0.25);background:rgba(129,140,248,0.07)}
+.pill-mood{color:#a78bfa;border-color:rgba(167,139,250,0.25);background:rgba(167,139,250,0.07)}
+.pill-layout{color:#67e8f9;border-color:rgba(103,232,249,0.25);background:rgba(103,232,249,0.07)}
+.pill-comp{color:#6ee7b7;border-color:rgba(110,231,183,0.25);background:rgba(110,231,183,0.07)}
+.pill-anim{color:#fbbf24;border-color:rgba(251,191,36,0.25);background:rgba(251,191,36,0.07)}
+.pill-more{color:rgba(240,237,230,0.3);border-color:rgba(255,255,255,0.06);background:transparent}
+
+/* Step 2 terminal */
+.mini-terminal{
+  background:rgba(30,33,48,0.4);
+  border:1px solid rgba(99,102,241,0.08);
+  border-radius:7px;padding:8px 12px;
+  font-family:'JetBrains Mono';font-size:10px;line-height:1.6;
+  margin-top:auto;
+}
+.t-dollar{color:#6ee7b7;font-weight:700}
+.t-flag{color:#818cf8}
+.t-val{color:rgba(240,237,230,0.55)}
+.t-dim{color:rgba(240,237,230,0.25)}
+
+/* Step 3 copy */
+.copy-visual{display:flex;align-items:center;gap:8px;margin-top:auto}
+.copy-btn-fake{
+  display:inline-flex;align-items:center;gap:5px;
+  background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.15);
+  border-radius:7px;padding:6px 12px;
+  font-family:'JetBrains Mono';font-size:10px;font-weight:600;
+  color:#818cf8;letter-spacing:0.5px;
+}
+.copy-arrow{font-family:'JetBrains Mono';font-size:11px;color:rgba(240,237,230,0.2)}
+.tool-icons{display:flex;gap:5px}
+.tool-icon{
+  font-family:'JetBrains Mono';font-size:8px;font-weight:600;
+  color:rgba(240,237,230,0.25);padding:4px 7px;
+  border:1px solid rgba(255,255,255,0.06);border-radius:5px;
+}
+
+/* ============ CALLOUT ============ */
+.callout{
+  flex:0 0 auto;
+  padding:6px 32px 10px;
+  position:relative;z-index:1;
+  animation:fadeUp 0.5s ease-out 0.6s both;
+}
+.callout-inner{
+  background:linear-gradient(135deg,rgba(99,102,241,0.08),rgba(124,58,237,0.06));
+  border:1px solid rgba(99,102,241,0.12);
+  border-radius:12px;
+  padding:14px 20px;
+  display:flex;align-items:flex-start;gap:14px;
+  position:relative;overflow:hidden;
+}
+/* Gradient accent bar on left */
+.callout-inner::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#6366f1,#a855f7);
+  border-radius:3px 0 0 3px;
+}
+.callout-icon{
+  flex-shrink:0;
+  width:28px;height:28px;
+  background:linear-gradient(135deg,#4338ca,#7c3aed);
+  border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  font-size:14px;
+  box-shadow:0 2px 8px rgba(99,102,241,0.25);
+}
+.callout-content{flex:1}
+.callout-title{
+  font-family:'Outfit';font-weight:700;font-size:13px;
+  color:#e0e7ff;margin-bottom:3px;
+}
+.callout-text{
+  font-size:12.5px;line-height:1.5;color:rgba(240,237,230,0.55);
+}
+
+/* ============ FOOTER ============ */
+.footer{
+  flex:0 0 auto;
+  text-align:center;padding:8px;
+  font-size:10px;color:rgba(240,237,230,0.1);
+  font-family:'JetBrains Mono';letter-spacing:0.5px;
+  position:relative;z-index:1;
+}
+
+@media(max-width:900px){
+  .steps-row{grid-template-columns:1fr;overflow-y:auto}
+  .wordmark{font-size:36px}
+  body{overflow:auto}
+  html,body{height:auto}
+}
+</style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- ============ HERO ============ -->
+<div class="hero">
+  <div class="terminal-intro">
+    <span class="dollar">$</span>
+    <span class="cmd">pintuck --start-crafting</span>
+    <span class="cursor-blink"></span>
+  </div>
+  <div class="brand-row">
+    <svg class="mascot" width="72" height="72" viewBox="0 0 240 240" fill="none">
+      <circle cx="158" cy="36" r="22" stroke="url(#mh)" stroke-width="3.5" fill="none"/>
+      <path d="M147,36 Q158,26 169,36" stroke="#1a1a2e" stroke-width="3" stroke-linecap="round" fill="none"/>
+      <path d="M142,54 L128,80" stroke="url(#mh)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="62" cy="62" r="24" stroke="url(#mh)" stroke-width="3.5" fill="none"/>
+      <ellipse cx="62" cy="62" rx="10" ry="11" fill="white"/><ellipse cx="65" cy="60" rx="5.5" ry="6.5" fill="#1a1a2e"/><circle cx="67.5" cy="57" r="2.8" fill="white"/>
+      <path d="M82,78 L108,96" stroke="url(#mh)" stroke-width="6" stroke-linecap="round"/>
+      <circle cx="118" cy="100" r="8" fill="url(#mb)"/><circle cx="118" cy="100" r="4.5" fill="rgba(255,255,255,0.15)"/>
+      <path d="M126,96 L134,90 C144,98 158,114 170,134 L184,160 L192,180 L196,194 C198,200 194,204 188,202 L184,198 L178,184 C168,164 154,140 140,120 L128,106 Z" fill="url(#mb)"/>
+      <path d="M110,96 L102,90 C92,98 78,114 66,134 L52,160 L44,180 L40,194 C38,200 42,204 48,202 L52,198 L58,184 C68,164 82,140 96,120 L108,106 Z" fill="url(#mb)" opacity="0.88"/>
+      <path d="M110,114 Q118,123 126,114" stroke="white" stroke-width="2.2" stroke-linecap="round" fill="none" opacity="0.7"/>
+      <defs>
+        <linearGradient id="mh" x1="40" y1="14" x2="160" y2="100" gradientUnits="userSpaceOnUse"><stop stop-color="#6366f1"/><stop offset="1" stop-color="#818cf8"/></linearGradient>
+        <linearGradient id="mb" x1="40" y1="90" x2="196" y2="204" gradientUnits="userSpaceOnUse"><stop stop-color="#4338ca"/><stop offset="0.4" stop-color="#6366f1"/><stop offset="0.75" stop-color="#7c3aed"/><stop offset="1" stop-color="#a855f7"/></linearGradient>
+      </defs>
+    </svg>
+    <div class="wordmark">Pintuck</div>
+  </div>
+  <div class="tagline">Craft the vibe. Copy the prompt.</div>
+  <button class="cta">Start Crafting →</button>
+</div>
+
+<!-- ============ HOW IT WORKS ============ -->
+<div class="divider">
+  <div class="div-line"></div>
+  <div class="div-label">How It Works</div>
+  <div class="div-line"></div>
+</div>
+
+<div class="how">
+  <div class="steps-row">
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">01</div>
+        <div class="step-title">Configure your design</div>
+      </div>
+      <div class="step-desc">Walk through 9 sections — pick from 19 palettes, set density, dial embellishment from brutalist to glass. A live preview updates with every choice.</div>
+      <div class="config-pills">
+        <span class="pill pill-theme">Theme</span>
+        <span class="pill pill-mood">Mood</span>
+        <span class="pill pill-layout">Layout</span>
+        <span class="pill pill-comp">Components</span>
+        <span class="pill pill-anim">Animation</span>
+        <span class="pill pill-more">+4 more</span>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">02</div>
+        <div class="step-title">Watch the prompt build</div>
+      </div>
+      <div class="step-desc">A terminal dock generates a structured prompt with concrete values — hex codes, pixel sizes, font names, easing curves.</div>
+      <div class="mini-terminal">
+        <div><span class="t-dollar">$</span> <span class="t-flag">--theme</span> <span class="t-val">"neon-cyber"</span></div>
+        <div>&nbsp;&nbsp;<span class="t-val">bg: #0a0e1a, accent: #00f5d4</span></div>
+        <div><span class="t-dollar">$</span> <span class="t-flag">--mood</span> <span class="t-val">"professional"</span></div>
+        <div>&nbsp;&nbsp;<span class="t-val">density: balanced, embellish: minimal</span></div>
+        <div><span class="t-dim">// 7 more sections...</span></div>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-head">
+        <div class="step-num">03</div>
+        <div class="step-title">Copy and build</div>
+      </div>
+      <div class="step-desc">Hit copy, paste into your AI coding tool. It gets precise specs ready to become real code.</div>
+      <div class="copy-visual">
+        <div class="copy-btn-fake">✂ Copy Prompt</div>
+        <div class="copy-arrow">→</div>
+        <div class="tool-icons">
+          <span class="tool-icon">Claude</span>
+          <span class="tool-icon">Q Dev</span>
+          <span class="tool-icon">Cursor</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ============ CALLOUT ============ -->
+<div class="callout">
+  <div class="callout-inner">
+    <div class="callout-icon">✂</div>
+    <div class="callout-content">
+      <div class="callout-title">A strong starting point — not a finished product</div>
+      <div class="callout-text">AI coding tools don't always translate prompts perfectly. Think of Pintuck's output as a foundation to iterate on — it gets you 80% of the way there, then you fine-tune the rest. The more specific your configuration, the closer the result. Use it as a jumping off point, not the final answer.</div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">built with ✂ by alex head</div>
+
+</body>
+</html>
