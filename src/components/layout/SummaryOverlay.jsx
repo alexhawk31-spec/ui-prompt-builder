@@ -1,25 +1,28 @@
 import { motion, AnimatePresence } from "framer-motion";
 import usePromptStore from "../../store/usePromptStore";
 import { CATEGORIES } from "../../constants/categories";
+import { isStepAvailable } from "../../constants/outputTypes";
 import { getSelectionSummary } from "../../utils/categoryHelpers";
 import Icon from "../shared/Icon";
 
 function useStoreSnapshot() {
   return {
     configuredSections: usePromptStore((s) => s.configuredSections),
+    outputType: usePromptStore((s) => s.outputType),
+    outputPurpose: usePromptStore((s) => s.outputPurpose),
+    selectedPurpose: usePromptStore((s) => s.selectedPurpose),
     theme: usePromptStore((s) => s.theme),
     customAccents: usePromptStore((s) => s.customAccents),
+    customColors: usePromptStore((s) => s.customColors),
     moodPreset: usePromptStore((s) => s.moodPreset),
     moodDimensions: usePromptStore((s) => s.moodDimensions),
     moodCustom: usePromptStore((s) => s.moodCustom),
     cardStyle: usePromptStore((s) => s.cardStyle),
     navStyle: usePromptStore((s) => s.navStyle),
+    navSelections: usePromptStore((s) => s.navSelections),
     buttonStyle: usePromptStore((s) => s.buttonStyle),
+    dataStyle: usePromptStore((s) => s.dataStyle),
     animation: usePromptStore((s) => s.animation),
-    appDescription: usePromptStore((s) => s.appDescription),
-    appName: usePromptStore((s) => s.appName),
-    awsGuidelines: usePromptStore((s) => s.awsGuidelines),
-    customNotes: usePromptStore((s) => s.customNotes),
   };
 }
 
@@ -115,6 +118,8 @@ export default function SummaryOverlay() {
             <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
               {CATEGORIES.map((cat) => {
                 const done = configuredSections.includes(cat.id);
+                const available = cat.id === "appType" || isStepAvailable(state.outputType, cat.id);
+                const notApplicable = state.outputType && !available;
                 const summary = done
                   ? getSelectionSummary(state, cat.id)
                   : null;
@@ -189,9 +194,11 @@ export default function SummaryOverlay() {
                           textOverflow: "ellipsis",
                         }}
                       >
-                        {done
-                          ? summary?.text || "Configured"
-                          : "Not configured"}
+                        {notApplicable
+                          ? "Not applicable for this project type"
+                          : done
+                            ? summary?.text || "Configured"
+                            : "Not configured"}
                       </div>
                     </div>
 

@@ -1,0 +1,223 @@
+/* ─── Fine-Tune Dimensions ─── */
+
+export const DATA_FINE_TUNE_DIMS = {
+  rowDensity: {
+    label: "Row Density",
+    desc: "Vertical spacing between data rows",
+    color: "#22c55e",
+    opts: [
+      { id: "compact", label: "Compact", desc: "Tight rows — 4px padding, maximum data per screen" },
+      { id: "standard", label: "Standard", desc: "Balanced — 8px padding, comfortable scanning" },
+      { id: "spacious", label: "Spacious", desc: "Generous — 14px padding, easy on the eyes" },
+      { id: "expansive", label: "Expansive", desc: "Ultra-roomy — 20px padding, one-item-at-a-time focus" },
+    ],
+  },
+  headerStyle: {
+    label: "Header Style",
+    desc: "Table header treatment",
+    color: "#34d399",
+    opts: [
+      { id: "subtle", label: "Subtle", desc: "Thin bottom border, muted text — whisper-quiet" },
+      { id: "bold", label: "Bold", desc: "Heavy weight text, uppercase, strong contrast" },
+      { id: "sticky", label: "Sticky", desc: "Position: sticky with backdrop-blur — always visible on scroll" },
+      { id: "colored", label: "Colored", desc: "Accent background tint, bold text — high visibility" },
+    ],
+  },
+  dividers: {
+    label: "Dividers",
+    desc: "Row separation treatment",
+    color: "#10b981",
+    opts: [
+      { id: "none", label: "None", desc: "Clean — rely on spacing only, zero lines" },
+      { id: "hairline", label: "Hairline", desc: "1px border at 6% opacity — barely there" },
+      { id: "solid", label: "Solid", desc: "1px border at 15% opacity — clearly defined rows" },
+      { id: "zebra", label: "Zebra Stripe", desc: "Alternating row backgrounds at 3-5% opacity" },
+    ],
+  },
+  numberStyle: {
+    label: "Number Style",
+    desc: "How numeric values are rendered",
+    color: "#059669",
+    opts: [
+      { id: "proportional", label: "Proportional", desc: "Standard font — numbers inherit body typeface" },
+      { id: "tabularMono", label: "Tabular Mono", desc: "Monospace numerals — columns align perfectly" },
+      { id: "highlighted", label: "Highlighted", desc: "Key numbers get bold weight + slightly larger size" },
+      { id: "colorCoded", label: "Color-Coded", desc: "Green for positive, red for negative, accent for key metrics" },
+    ],
+  },
+  charts: {
+    label: "Charts",
+    desc: "Data visualization approach",
+    color: "#14b8a6",
+    opts: [
+      { id: "none", label: "None", desc: "Pure text and numbers — let the data speak plainly" },
+      { id: "sparklines", label: "Sparklines", desc: "Tiny inline charts inside table cells or cards" },
+      { id: "full", label: "Full Charts", desc: "Dedicated chart blocks — bar, line, area, or pie" },
+      { id: "interactive", label: "Interactive", desc: "Hover tooltips, click-to-filter, animated transitions" },
+    ],
+  },
+  emptyState: {
+    label: "Empty State",
+    desc: "What shows when data is missing",
+    color: "#6ee7b7",
+    opts: [
+      { id: "blank", label: "Blank", desc: "Just whitespace — minimal, assume data will arrive" },
+      { id: "skeleton", label: "Skeleton", desc: "Animated shimmer placeholders — loading feel" },
+      { id: "placeholder", label: "Placeholder Data", desc: "Show example/demo data with a muted overlay" },
+      { id: "illustrated", label: "Illustrated", desc: "Friendly illustration + message + CTA to add data" },
+    ],
+  },
+  accent: {
+    label: "Accent",
+    desc: "Color shift for data elements",
+    color: "#fbbf24",
+    opts: [
+      { id: "theme", label: "Theme Default", desc: "Use the global theme accent as-is" },
+      { id: "warm", label: "Warm Shift", desc: "Rotate hue +25° toward orange/amber tones" },
+      { id: "cool", label: "Cool Shift", desc: "Rotate hue -25° toward blue/teal tones" },
+      { id: "muted", label: "Muted", desc: "Desaturate the accent ~40% for softer highlights" },
+      { id: "complementary", label: "Complementary", desc: "Rotate hue 180° for high-contrast data accents" },
+    ],
+  },
+};
+
+/* ─── Prompt Map ─── */
+
+export const DATA_PROMPT_MAP = {
+  rowDensity: {
+    compact: "tight row padding: 4px vertical, maximize visible data rows per screen",
+    standard: "standard row padding: 8px vertical, comfortable scanning density",
+    spacious: "generous row padding: 14px vertical, easy-to-read spacing",
+    expansive: "ultra-roomy rows: 20px vertical padding, one-item-at-a-time focus with clear separation",
+  },
+  headerStyle: {
+    subtle: "table headers: muted text, thin bottom border, font-weight 500 — understated",
+    bold: "table headers: uppercase, font-weight 800, strong color contrast, letter-spacing 0.05em",
+    sticky: "table headers: position: sticky, top: 0, backdrop-filter: blur(8px), z-index 10 — always visible on scroll",
+    colored: "table headers: accent background at 10% opacity, bold text, accent bottom border — high visibility",
+  },
+  dividers: {
+    none: "rows separated by spacing only — zero border lines between rows",
+    hairline: "1px row dividers at 6% opacity — barely visible separation",
+    solid: "1px row dividers at 15% opacity — clearly defined row boundaries",
+    zebra: "alternating row backgrounds at 3% and 5% opacity — zebra stripe pattern",
+  },
+  numberStyle: {
+    proportional: "numbers use the body typeface — proportional spacing, blends with text",
+    tabularMono: "numbers use font-variant-numeric: tabular-nums or a monospace font — columns align perfectly",
+    highlighted: "key numbers get font-weight 700 and 1-2px larger font-size — emphasize important values",
+    colorCoded: "positive values in green (#22c55e), negative in red (#ef4444), key metrics in accent color — semantic color coding",
+  },
+  charts: {
+    none: "pure text and numbers — present data without chart visualizations",
+    sparklines: "embed tiny inline sparkline charts (40x16px) inside table cells or data cards — trend-at-a-glance",
+    full: "include dedicated chart blocks: bar charts, line charts, area charts, or pie charts with proper axis labels and legends",
+    interactive: "charts with hover tooltips showing exact values, click-to-filter, and smooth animated transitions between states",
+  },
+  emptyState: {
+    blank: "empty data areas show whitespace only — assume data will load shortly",
+    skeleton: "empty data areas show animated shimmer skeleton loaders matching the data layout shape",
+    placeholder: "empty data areas show realistic example data at 40% opacity with a muted 'No data yet' overlay",
+    illustrated: "empty data areas show a friendly illustration (icon + message + CTA button to add data)",
+  },
+  accent: {
+    theme: "use the global theme accent color for chart fills, active states, and key metric highlights",
+    warm: "shift the accent +25° warmer (toward orange/amber) for chart fills, row highlights, and data badges",
+    cool: "shift the accent -25° cooler (toward blue/teal) for chart fills, row highlights, and data badges",
+    muted: "desaturate the accent ~40% for softer chart fills and data highlights",
+    complementary: "use the complementary color (hue +180°) of the theme accent for data visualizations",
+  },
+};
+
+/* ─── Data Display Styles ─── */
+
+export const DATA_STYLES = [
+  {
+    id: "ledger",
+    label: "Ledger",
+    tagline: "Rows and receipts",
+    desc: "Dense table-first layout — tight rows, monospace numbers, alternating backgrounds",
+    icon: "list",
+    color: "#22c55e",
+    dims: ["rowDensity", "headerStyle", "dividers", "numberStyle", "accent"],
+    defaults: { rowDensity: "compact", headerStyle: "bold", dividers: "zebra", numberStyle: "tabularMono", accent: "theme" },
+    basePrompt: "Display data in dense, ledger-style tables. Tight alternating rows with monospace numerals. Prioritize maximum data visibility per screen. Headers should be strong and clearly distinguished. Think spreadsheet precision with design polish — every column aligned, every number formatted.",
+  },
+  {
+    id: "pulse",
+    label: "Pulse",
+    tagline: "The vital signs",
+    desc: "KPI cards up top, charts in the middle, summary table at the bottom",
+    icon: "chart",
+    color: "#34d399",
+    dims: ["rowDensity", "headerStyle", "dividers", "numberStyle", "charts", "accent"],
+    defaults: { rowDensity: "standard", headerStyle: "subtle", dividers: "hairline", numberStyle: "highlighted", charts: "sparklines", accent: "theme" },
+    basePrompt: "Display data in a dashboard pulse layout. Lead with large KPI cards showing key metrics (value, label, trend arrow, sparkline). Follow with chart blocks for trend visualization. End with a compact summary table. Emphasize the most important numbers with size and weight contrast.",
+  },
+  {
+    id: "linen",
+    label: "Linen",
+    tagline: "Clean and pressed",
+    desc: "Airy modern tables — generous padding, whisper-thin dividers, refined simplicity",
+    icon: "layout",
+    color: "#6ee7b7",
+    dims: ["rowDensity", "headerStyle", "dividers", "numberStyle", "emptyState", "accent"],
+    defaults: { rowDensity: "spacious", headerStyle: "subtle", dividers: "hairline", numberStyle: "proportional", emptyState: "skeleton", accent: "theme" },
+    basePrompt: "Display data in clean, airy tables with generous whitespace. Whisper-thin dividers and refined typography. Headers are understated. Let the data breathe — prioritize readability over density. Think Notion or Linear's data views — minimal chrome, maximum clarity.",
+  },
+  {
+    id: "ember",
+    label: "Ember",
+    tagline: "Heat tells the story",
+    desc: "Color-coded cells — value intensity mapped to gradients and semantic hues",
+    icon: "zap",
+    color: "#f97316",
+    dims: ["rowDensity", "headerStyle", "dividers", "numberStyle", "accent"],
+    defaults: { rowDensity: "standard", headerStyle: "colored", dividers: "solid", numberStyle: "colorCoded", accent: "warm" },
+    basePrompt: "Display data with heat-map intensity coding. Cell backgrounds shift from cool to warm based on value magnitude. High values glow with accent tints, low values stay muted. Use semantic colors: green for growth, red for decline, amber for caution. The data should feel alive with color — let patterns emerge visually through gradients.",
+  },
+  {
+    id: "ticker",
+    label: "Ticker",
+    tagline: "Always streaming",
+    desc: "Scrolling feed of activity logs, timeline entries, real-time updates",
+    icon: "film",
+    color: "#38bdf8",
+    dims: ["rowDensity", "dividers", "numberStyle", "accent"],
+    defaults: { rowDensity: "standard", dividers: "hairline", numberStyle: "tabularMono", accent: "theme" },
+    basePrompt: "Display data as a streaming activity feed. Each entry is a timeline row: timestamp on the left, event description in the middle, metadata on the right. Most recent items at top. Use subtle dot or line connectors between entries. Think GitHub activity feed or Slack message log — scannable, chronological, always-updating feel.",
+  },
+  {
+    id: "lineup",
+    label: "Lineup",
+    tagline: "Side by side",
+    desc: "Comparison columns — feature tables, pricing tiers, spec sheets",
+    icon: "barChart",
+    color: "#a78bfa",
+    dims: ["rowDensity", "headerStyle", "dividers", "numberStyle", "emptyState", "accent"],
+    defaults: { rowDensity: "standard", headerStyle: "colored", dividers: "solid", numberStyle: "highlighted", emptyState: "placeholder", accent: "theme" },
+    basePrompt: "Display data in comparison-column layout. Side-by-side columns with a shared row label on the left. Highlight differences between columns with accent tints. Featured/recommended column gets a subtle accent border or background. Think pricing tables or spec comparison sheets — structured, scannable, decisive.",
+  },
+  {
+    id: "mosaic",
+    label: "Mosaic",
+    tagline: "A thousand tiny stories",
+    desc: "Grid of mini data cards — each tile is its own self-contained metric",
+    icon: "grid",
+    color: "#fbbf24",
+    dims: ["rowDensity", "numberStyle", "charts", "accent"],
+    defaults: { rowDensity: "standard", numberStyle: "highlighted", charts: "sparklines", accent: "theme" },
+    basePrompt: "Display data as a mosaic grid of mini data cards. Each tile contains one metric: large number, label, trend indicator, and optional sparkline. Tiles arranged in a responsive CSS grid (3-4 columns). Each card is self-contained with subtle borders or card backgrounds. Think Datadog or Grafana dashboard tiles — compact, information-dense, visually scannable.",
+  },
+  {
+    id: "teletype",
+    label: "Teletype",
+    tagline: "Old-school readout",
+    desc: "Monospace everything — ASCII-aligned columns, code-style formatting",
+    icon: "terminal",
+    color: "#94a3b8",
+    dims: ["rowDensity", "dividers", "numberStyle", "accent"],
+    defaults: { rowDensity: "compact", dividers: "solid", numberStyle: "tabularMono", accent: "muted" },
+    basePrompt: "Display data in monospace teletype style. All text uses a monospace font (JetBrains Mono, Fira Code, or SF Mono). ASCII-aligned columns with fixed-width formatting. Use dashes and pipes for visual structure. Subtle green-on-dark terminal aesthetic. Think CLI output or old-school stock terminals — raw, precise, developer-friendly.",
+  },
+];

@@ -1,7 +1,7 @@
 export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
   const m = mood || {};
-  const pad = Math.round((m.padScale || 1) * 16);
-  const gap = Math.round((m.gapScale || 1) * 10);
+  const pad = Math.round((m.padScale || 1) * 14);
+  const gap = Math.round((m.gapScale || 1) * 8);
   const fs = (base) => Math.round((m.fontScale || 1) * base);
   const rad = m.radius ?? 10;
   const cRad = m.cardRadius ?? 8;
@@ -19,33 +19,66 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: pad, gap, background: p.bg, fontFamily: bFont }}>
+      {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
         <div style={{ fontSize: fs(15), fontFamily: hFont, fontWeight: hWt, color: p.text }}>Getting Started</div>
-        <div style={{ fontSize: fs(9), fontFamily: bFont, fontWeight: 600, color: p.muted }}>Step 2 of 5</div>
-      </div>
-      <div style={{ height: 6, borderRadius: rad, background: p.surface }}>
-        <div style={{ width: "40%", height: "100%", borderRadius: rad, background: p.accent }} />
-      </div>
-      <div style={{ flex: 1, borderRadius: cRad, background: p.card, border: `1px solid ${p.border}`, padding: pad, display: "flex", flexDirection: "column", gap: Math.round(gap * 0.8), overflow: "hidden", boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>
-        <div style={{ width: "55%", height: 8, borderRadius: cRad / 2, background: p.dim }} />
-        <div style={{ width: "92%", height: 4, borderRadius: cRad / 4, background: p.borderLight }} />
-        <div style={{ width: "80%", height: 4, borderRadius: cRad / 4, background: p.borderLight }} />
-        <div style={{ padding: Math.round(pad * 0.75), borderRadius: rad, background: p.accentBg, borderLeft: `3px solid ${p.accent}`, transition: tr }}>
-          <div style={{ width: "65%", height: 5, borderRadius: cRad / 4, background: `${p.accent}80` }} />
-          <div style={{ width: "45%", height: 4, borderRadius: cRad / 4, background: `${p.accent}50`, marginTop: 5 }} />
+        <div style={{ display: "flex", gap: 4 }}>
+          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Skip</div>
+          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>Next</div>
         </div>
-        <div style={{ width: "88%", height: 4, borderRadius: cRad / 4, background: p.borderLight }} />
-        <div style={{ borderRadius: rad, background: p.bg, border: `1px solid ${p.border}`, padding: Math.round(pad * 0.625), marginTop: 2, boxShadow: cShadow, transition: tr }}>
-          <div style={{ width: "40%", height: 5, borderRadius: cRad / 2, background: p.dim, marginBottom: 6 }} />
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: Math.round(gap * 0.6) }}>
-            <div style={{ height: 28, borderRadius: cRad, background: p.card, border: `1px solid ${p.border}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: fs(9), fontFamily: bFont, fontWeight: 500, color: p.muted, boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>Option A</div>
-            <div style={{ height: 28, borderRadius: cRad, background: p.accentBg, border: `2px solid ${p.accent}`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: fs(9), fontFamily: bFont, fontWeight: hWt, color: p.accent, boxShadow: cShadow, transition: tr }}>Option B ✓</div>
+      </div>
+
+      {/* Progress */}
+      <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
+        <div style={{ flex: 1, height: 5, borderRadius: rad, background: p.surface }}>
+          <div style={{ width: "40%", height: "100%", borderRadius: rad, background: p.accent }} />
+        </div>
+        <div style={{ fontSize: fs(8), fontWeight: 600, color: p.dim }}>Step 2/5</div>
+      </div>
+
+      {/* Lesson cards */}
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", gap, minHeight: 0, overflow: "hidden" }}>
+        {[
+          { icon: "book", title: "Introduction", desc: "Learn the basics of the platform", done: true },
+          { icon: "zap", title: "Quick Setup", desc: "Configure your workspace settings", active: true },
+          { icon: "palette", title: "Customization", desc: "Personalize your experience" },
+        ].map((lesson) => (
+          <div key={lesson.title} style={{
+            flex: 1,
+            borderRadius: cRad,
+            padding: pad,
+            background: lesson.active ? p.accentBg : p.card,
+            border: `1.5px solid ${lesson.active ? p.accent : p.border}`,
+            display: "flex",
+            alignItems: "center",
+            gap: gap * 1.2,
+            boxShadow: cShadow,
+            transition: tr,
+            ...cBase,
+            ...(cExtra || {}),
+          }}>
+            <div style={{ width: 30, height: 30, borderRadius: cRad, background: lesson.done ? p.greenBg : lesson.active ? `${p.accent}20` : p.surface, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
+              {lesson.done ? (
+                <svg width={fs(13)} height={fs(13)} viewBox="0 0 24 24" fill="none" stroke={p.green || "#34d399"} strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12" /></svg>
+              ) : (
+                <svg width={fs(13)} height={fs(13)} viewBox="0 0 24 24" fill="none" stroke={lesson.active ? p.accent : p.muted} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">{lesson.icon === "book" ? <><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" /><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" /></> : lesson.icon === "zap" ? <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" /> : <><circle cx="12" cy="12" r="10" /><path d="M12 2a7 7 0 0 0-7 7" /><circle cx="12" cy="12" r="3" /></>}</svg>
+              )}
+            </div>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{ fontSize: fs(11), fontWeight: hWt, fontFamily: hFont, color: p.text }}>{lesson.title}</div>
+              <div style={{ fontSize: fs(8), color: p.muted, marginTop: 2 }}>{lesson.desc}</div>
+            </div>
+            {lesson.active && (
+              <div style={{ padding: "3px 8px", borderRadius: cRad, background: p.accent, fontSize: fs(7), fontWeight: 700, color: "#fff", flexShrink: 0, transition: tr, ...btnP }}>Start</div>
+            )}
           </div>
-        </div>
+        ))}
       </div>
-      <div style={{ display: "flex", justifyContent: "space-between" }}>
-        <div style={{ padding: `${Math.round(pad * 0.5)}px ${pad}px`, borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(10), fontFamily: bFont, fontWeight: 600, color: p.muted, boxShadow: cShadow, transition: tr, ...btnS }}>Back</div>
-        <div style={{ padding: `${Math.round(pad * 0.5)}px ${pad}px`, borderRadius: cRad, background: p.accent, fontSize: fs(10), fontFamily: bFont, fontWeight: hWt, color: "#fff", boxShadow: cShadow, transition: tr, ...btnP }}>Continue</div>
+
+      {/* Bottom bar */}
+      <div style={{ display: "flex", justifyContent: "space-between", paddingTop: gap * 0.5 }}>
+        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(9), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Save for Later</div>
+        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.accent, fontSize: fs(9), fontWeight: hWt, color: "#fff", transition: tr, ...btnP }}>Complete Lesson</div>
       </div>
     </div>
   );

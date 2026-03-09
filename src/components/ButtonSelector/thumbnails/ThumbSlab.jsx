@@ -1,53 +1,76 @@
-export default function ThumbSlab({ accent }) {
+export default function ThumbSlab({ accent, label, desc }) {
+  const ac = accent || "#6366f1";
   return (
     <div
       style={{
         height: "100%",
         background: "#0d1018",
-        padding: 6,
+        overflow: "hidden",
         display: "flex",
         flexDirection: "column",
         alignItems: "center",
         justifyContent: "center",
-        gap: 4,
-        borderRadius: 4,
-        overflow: "hidden",
+        gap: 6,
+        padding: 10,
+        fontFamily: "'DM Sans', sans-serif",
       }}
     >
-      {/* Primary — solid accent, dark border, offset shadow */}
+      {/* Primary — solid accent bg, dark text, 2px dark border, hard offset shadow */}
       <div
         style={{
-          width: "80%",
-          height: 7,
+          width: "100%",
+          background: ac,
+          border: "2px solid #111",
           borderRadius: 0,
-          background: accent,
-          border: "1.5px solid #0d1018",
-          boxShadow: `2px 2px 0 ${accent}66`,
+          padding: "5px 12px",
+          fontSize: 9,
+          fontWeight: 800,
+          color: "#0d1018",
+          textAlign: "center",
+          lineHeight: 1.2,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
           boxSizing: "border-box",
+          boxShadow: `3px 3px 0 ${ac}88`,
         }}
-      />
-      {/* Secondary — transparent, thick accent border, offset shadow */}
+      >
+        Get Started
+      </div>
+      {/* Secondary — transparent bg, 2px accent border, hard shadow */}
       <div
         style={{
-          width: "70%",
-          height: 7,
-          borderRadius: 0,
+          width: "100%",
           background: "transparent",
-          border: `1.5px solid ${accent}`,
-          boxShadow: `2px 2px 0 ${accent}44`,
+          border: `2px solid ${ac}`,
+          borderRadius: 0,
+          padding: "4px 12px",
+          fontSize: 8,
+          fontWeight: 700,
+          color: ac,
+          textAlign: "center",
+          lineHeight: 1.2,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
           boxSizing: "border-box",
+          boxShadow: `3px 3px 0 ${ac}44`,
         }}
-      />
-      {/* Tertiary — thick uppercase text bar */}
+      >
+        Learn More
+      </div>
+      {/* Tertiary — uppercase text only */}
       <div
         style={{
-          width: "50%",
-          height: 3,
-          borderRadius: 0,
-          background: accent,
-          opacity: 0.6,
+          fontSize: 8,
+          fontWeight: 700,
+          color: ac,
+          textAlign: "center",
+          lineHeight: 1.2,
+          textTransform: "uppercase",
+          letterSpacing: "0.05em",
         }}
-      />
+      >
+        Skip
+      </div>
     </div>
   );
 }

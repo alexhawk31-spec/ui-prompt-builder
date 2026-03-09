@@ -5,6 +5,11 @@ import { getShellColors } from "../../utils/shellColors";
 import { THEMES } from "../../constants/themes";
 import { getPreviewPalette } from "../PurposeSelector/constants";
 import { CARD_STYLES, CARD_FINE_TUNE_DIMS } from "./constants";
+import {
+  PRESENTATION_CARD_OPTIONS,
+  ONE_PAGER_CARD_OPTIONS,
+} from "../../constants/modeOptions";
+import SimpleMultiSelect from "../shared/SimpleMultiSelect";
 import Icon from "../shared/Icon";
 import NextStepButton from "../shared/NextStepButton";
 
@@ -115,14 +120,61 @@ export default function CardStyleSelector() {
   const previewMode = usePromptStore((s) => s.previewMode);
   const themeId = usePromptStore((s) => s.theme);
   const customAccents = usePromptStore((s) => s.customAccents);
+  const customColors = usePromptStore((s) => s.customColors);
+  const outputType = usePromptStore((s) => s.outputType);
   const c = getShellColors(shellMode === "light");
+
+  // ── Presentation / One Pager: simple multi-select ──
+  if (outputType === "presentation" || outputType === "one-pager") {
+    const options = outputType === "presentation" ? PRESENTATION_CARD_OPTIONS : ONE_PAGER_CARD_OPTIONS;
+    const SECTION_COLOR = "#818cf8";
+    // Store selections as cardStyle.styleId = comma-separated IDs
+    const selections = cardStyle?.styleId?.split(",").filter(Boolean) || [];
+
+    const handleToggle = (id) => {
+      const next = selections.includes(id)
+        ? selections.filter((s) => s !== id)
+        : [...selections, id];
+      if (next.length === 0) {
+        clearCardStyle();
+      } else {
+        usePromptStore.setState({
+          cardStyle: { styleId: next.join(","), fineTune: {}, custom: false },
+        });
+        usePromptStore.getState().autoInclude("cards");
+      }
+    };
+
+    return (
+      <>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>
+            {outputType === "presentation" ? "Slide Types" : "Content Blocks"}
+          </div>
+          <div style={{ fontSize: 11, color: c.muted }}>
+            {outputType === "presentation"
+              ? "Select the slide layouts to include in your deck"
+              : "Select the content block types to include"}
+          </div>
+        </div>
+        <SimpleMultiSelect
+          options={options}
+          selections={selections}
+          onToggle={handleToggle}
+          color={SECTION_COLOR}
+        />
+        <NextStepButton targetCategory="data" label="Data Display" />
+      </>
+    );
+  }
 
   const effectiveTheme = useMemo(() => {
     const base = THEMES.find((t) => t.id === themeId);
     if (!base) return null;
+    const overrides = customColors[themeId] || {};
     const accent = customAccents[themeId] || base.preview.accent;
-    return { ...base, preview: { ...base.preview, accent } };
-  }, [themeId, customAccents]);
+    return { ...base, preview: { ...base.preview, ...overrides, accent } };
+  }, [themeId, customAccents, customColors]);
 
   const p = useMemo(() => getPreviewPalette(previewMode === "dark", effectiveTheme), [previewMode, effectiveTheme]);
 

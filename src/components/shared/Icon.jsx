@@ -299,6 +299,116 @@ const ICON_PATHS = {
       <line x1="12" y1="19" x2="20" y2="19" />
     </>
   ),
+  snowflake: (
+    <>
+      <line x1="12" y1="2" x2="12" y2="22" />
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
+      <line x1="19.07" y1="4.93" x2="4.93" y2="19.07" />
+      <line x1="9" y1="3.5" x2="12" y2="6.5" />
+      <line x1="15" y1="3.5" x2="12" y2="6.5" />
+      <line x1="9" y1="20.5" x2="12" y2="17.5" />
+      <line x1="15" y1="20.5" x2="12" y2="17.5" />
+    </>
+  ),
+  underline: (
+    <>
+      <path d="M6 3v7a6 6 0 006 6 6 6 0 006-6V3" />
+      <line x1="4" y1="21" x2="20" y2="21" />
+    </>
+  ),
+  box: (
+    <>
+      <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z" />
+      <polyline points="3.27 6.96 12 12.01 20.73 6.96" />
+      <line x1="12" y1="22.08" x2="12" y2="12" />
+    </>
+  ),
+  columns: (
+    <>
+      <rect x="3" y="3" width="7" height="18" rx="1" />
+      <rect x="14" y="3" width="7" height="18" rx="1" />
+    </>
+  ),
+  chevronLeft: <polyline points="15 18 9 12 15 6" />,
+  radar: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <circle cx="12" cy="12" r="6" />
+      <circle cx="12" cy="12" r="2" />
+      <line x1="12" y1="2" x2="12" y2="6" />
+    </>
+  ),
+  slash: <line x1="18" y1="6" x2="6" y2="18" />,
+  crown: (
+    <>
+      <path d="M2 17l3-10 5 6 2-8 2 8 5-6 3 10z" />
+      <path d="M2 17h20" />
+    </>
+  ),
+  download: (
+    <>
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+      <polyline points="7 10 12 15 17 10" />
+      <line x1="12" y1="15" x2="12" y2="3" />
+    </>
+  ),
+  trash: (
+    <>
+      <polyline points="3 6 5 6 21 6" />
+      <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2" />
+    </>
+  ),
+  checkCircle: (
+    <>
+      <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+      <polyline points="22 4 12 14.01 9 11.01" />
+    </>
+  ),
+  xCircle: (
+    <>
+      <circle cx="12" cy="12" r="10" />
+      <line x1="15" y1="9" x2="9" y2="15" />
+      <line x1="9" y1="9" x2="15" y2="15" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4" />
+      <polyline points="17 8 12 3 7 8" />
+      <line x1="12" y1="3" x2="12" y2="15" />
+    </>
+  ),
+  monitor: (
+    <>
+      <rect x="2" y="3" width="20" height="14" rx="2" />
+      <line x1="8" y1="21" x2="16" y2="21" />
+      <line x1="12" y1="17" x2="12" y2="21" />
+    </>
+  ),
+  fileText: (
+    <>
+      <path d="M14.5 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <line x1="10" y1="9" x2="8" y2="9" />
+    </>
+  ),
+  book: (
+    <>
+      <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+      <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+    </>
+  ),
+  code: (
+    <>
+      <polyline points="16 18 22 12 16 6" />
+      <polyline points="8 6 2 12 8 18" />
+    </>
+  ),
+  play: (
+    <polygon points="5 3 19 12 5 21 5 3" />
+  ),
 };
 
 export default function Icon({ name, size = 20, color = "currentColor" }) {

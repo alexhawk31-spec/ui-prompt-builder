@@ -127,6 +127,36 @@ export default function ButtonPreview({ style, fineTune, accent, p }) {
       return base({ background: "transparent", border: "none", color: accent, borderRadius: 9999, boxShadow: "none" });
     }
 
+    /* --- FROST --- */
+    if (id === "frost") {
+      if (tier === "primary")   return base({ background: "rgba(255,255,255,0.12)", border: "1px solid rgba(255,255,255,0.18)", color: "#ffffff", backdropFilter: "blur(12px)" });
+      if (tier === "secondary") return base({ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.10)", color: "rgba(255,255,255,0.55)", backdropFilter: "blur(8px)", boxShadow: "none" });
+      return base({ background: "transparent", border: "none", color: accent, boxShadow: "none" });
+    }
+
+    /* --- INK --- */
+    if (id === "ink") {
+      if (tier === "primary")   return base({ background: "transparent", border: "none", color: accent, padding: "4px 0", textDecoration: "underline", textUnderlineOffset: 3, textDecorationThickness: 1.5, boxShadow: "none" });
+      if (tier === "secondary") return base({ background: "transparent", border: "none", color: "rgba(255,255,255,0.45)", padding: "4px 0", textDecoration: "underline", textUnderlineOffset: 3, textDecorationColor: "rgba(255,255,255,0.25)", boxShadow: "none" });
+      return base({ background: "transparent", border: "none", color: "rgba(255,255,255,0.3)", padding: "4px 0", boxShadow: "none" });
+    }
+
+    /* --- BRICK --- */
+    if (id === "brick") {
+      const depth = fineTune.depth === "deep" ? 5 : 3;
+      if (tier === "primary")   return base({ background: accent, color: "#0d1018", borderBottom: `${depth}px solid ${accent}`, filter: "brightness(1)", position: "relative", boxShadow: "none" });
+      if (tier === "secondary") return base({ background: `${accent}1A`, color: accent, borderBottom: `${depth}px solid ${accent}55`, boxShadow: "none" });
+      return base({ background: "transparent", border: "none", color: accent, borderBottom: `${depth - 1}px solid ${accent}44`, boxShadow: "none" });
+    }
+
+    /* --- DUO --- (split buttons handled in render) */
+    if (id === "duo") {
+      // Returns label zone style only; icon zone rendered separately
+      if (tier === "primary")   return base({ background: accent, color: "#0d1018" });
+      if (tier === "secondary") return base({ background: "transparent", border: `1px solid ${accent}55`, color: accent, boxShadow: "none" });
+      return base({ background: "transparent", border: "none", color: accent, boxShadow: "none" });
+    }
+
     // fallback (should not reach)
     return base({ background: accent, color: "#0d1018" });
   }
@@ -212,6 +242,73 @@ export default function ButtonPreview({ style, fineTune, accent, p }) {
             {threeLabels.map((lbl, i) => (
               <div key={lbl} style={segStyle(i === 1)}>{lbl}</div>
             ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  /* ═══════════════ DUO STYLE ═══════════════ */
+  if (style.id === "duo") {
+    const arrow = "\u2192";
+    function duoBtn(tier, text) {
+      const labelStyle = tierStyles(tier);
+      const isPrimary = tier === "primary";
+      const isSecondary = tier === "secondary";
+      return (
+        <div style={{ display: "inline-flex", borderRadius: br, overflow: "hidden", border: isSecondary ? `1px solid ${accent}55` : "none" }}>
+          <div style={{
+            padding: `${sz.padding.split(" ")[0]} 8px`,
+            fontSize: sz.fontSize,
+            fontWeight: fw,
+            fontFamily: "'DM Sans', sans-serif",
+            lineHeight: 1,
+            background: isPrimary ? accent : isSecondary ? `${accent}20` : "transparent",
+            color: isPrimary ? "#0d1018" : accent,
+            filter: isPrimary ? "brightness(0.75)" : "none",
+            display: "flex",
+            alignItems: "center",
+            borderRight: tier === "tertiary" ? "none" : `1px solid ${isPrimary ? "rgba(0,0,0,0.15)" : `${accent}33`}`,
+          }}>{arrow}</div>
+          <div style={{
+            ...labelStyle,
+            borderRadius: 0,
+            border: "none",
+          }}>{text}</div>
+        </div>
+      );
+    }
+
+    return (
+      <div style={{ background: "#0d1018", padding: 16, borderRadius: 10 }}>
+        <div style={rowStyle}>
+          <div style={rowLabel}>Primary</div>
+          <div style={btnGroup}>
+            {duoBtn("primary", "Get Started")}
+            {duoBtn("primary", "Save")}
+          </div>
+        </div>
+        <div style={rowStyle}>
+          <div style={rowLabel}>Secondary</div>
+          <div style={btnGroup}>
+            {duoBtn("secondary", "Learn More")}
+            {duoBtn("secondary", "Cancel")}
+          </div>
+        </div>
+        <div style={rowStyle}>
+          <div style={rowLabel}>Tertiary</div>
+          <div style={btnGroup}>
+            <div style={tierStyles("tertiary")}>
+              <span style={{ opacity: 0.5 }}>{arrow}</span> Skip
+            </div>
+          </div>
+        </div>
+        <div style={{ ...rowStyle, marginBottom: 0 }}>
+          <div style={rowLabel}>Together</div>
+          <div style={btnGroup}>
+            {duoBtn("primary", "Get Started")}
+            {duoBtn("secondary", "Learn More")}
+            <div style={tierStyles("tertiary")}>Skip</div>
           </div>
         </div>
       </div>

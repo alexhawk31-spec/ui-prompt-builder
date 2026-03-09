@@ -32,7 +32,10 @@ export default function PreviewFreestyle({ p, mood, cardCSS, buttonCSS }) {
             <div key={t} style={{ fontSize: fs(8), fontWeight: 500, color: t === "Home" ? p.accent : p.muted }}>{t}</div>
           ))}
         </div>
-        <div style={{ width: 20, height: 20, borderRadius: "50%", background: p.accentBg, border: `1px solid ${p.accent}30`, display: "flex", alignItems: "center", justifyContent: "center", fontSize: fs(8), fontWeight: 700, color: p.accent, transition: tr }}>A</div>
+        <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
+          <div style={{ padding: "3px 8px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(7), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Sign In</div>
+          <div style={{ padding: "3px 8px", borderRadius: cRad, background: p.accent, fontSize: fs(7), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>Sign Up</div>
+        </div>
       </div>
 
       {/* Stat cards row */}
@@ -80,7 +83,8 @@ export default function PreviewFreestyle({ p, mood, cardCSS, buttonCSS }) {
       </div>
 
       {/* Bottom CTA bar */}
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: `${Math.round(gap)}px ${pad}px ${Math.round(pad * 0.8)}px`, borderTop: `1px solid ${p.border}` }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", padding: `${Math.round(gap)}px ${pad}px ${Math.round(pad * 0.8)}px`, borderTop: `1px solid ${p.border}`, gap: 4 }}>
+        <div style={{ padding: `${Math.round(gap * 0.67)}px ${Math.round(pad * 1.2)}px`, borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Docs</div>
         <div style={{ padding: `${Math.round(gap * 0.67)}px ${Math.round(pad * 1.2)}px`, borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Learn More</div>
         <div style={{ padding: `${Math.round(gap * 0.67)}px ${Math.round(pad * 1.2)}px`, borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>Get Started</div>
       </div>

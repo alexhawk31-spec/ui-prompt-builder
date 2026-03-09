@@ -1,6 +1,7 @@
 import { useState } from "react";
 import usePromptStore from "../../store/usePromptStore";
 import { CATEGORIES } from "../../constants/categories";
+import { isStepAvailable, getDisabledTooltip } from "../../constants/outputTypes";
 import { getShellColors } from "../../utils/shellColors";
 import { generatePrompt } from "../../utils/generatePrompt";
 import Icon from "../shared/Icon";
@@ -11,6 +12,7 @@ export default function NavStrip() {
   const configuredSections = usePromptStore((s) => s.configuredSections);
   const setShowSummary = usePromptStore((s) => s.setShowSummary);
   const shellMode = usePromptStore((s) => s.shellMode);
+  const outputType = usePromptStore((s) => s.outputType);
   const c = getShellColors(shellMode === "light");
   const [copied, setCopied] = useState(false);
 
@@ -39,20 +41,30 @@ export default function NavStrip() {
       {CATEGORIES.map((cat) => {
         const isActive = activeCategory === cat.id;
         const isConfigured = configuredSections.includes(cat.id);
+        const isProject = cat.id === "appType";
+        const available = isProject || isStepAvailable(outputType, cat.id);
+        const isDisabled = !isProject && !available;
+        const tooltip = isDisabled ? getDisabledTooltip(outputType, cat.id) : null;
+        // Steps are locked (dimmed but not grayed) when no output type selected
+        const isLocked = !isProject && !outputType;
 
         return (
           <button
             key={cat.id}
-            onClick={() => setActiveCategory(cat.id)}
+            onClick={() => {
+              if (isDisabled || isLocked) return;
+              setActiveCategory(cat.id);
+            }}
+            title={tooltip || (isLocked ? "Select a project type first" : undefined)}
             style={{
               width: "100%",
               height: 34,
               borderRadius: 8,
               border: "none",
-              cursor: "pointer",
+              cursor: isDisabled || isLocked ? "not-allowed" : "pointer",
               background: isActive
                 ? "rgba(255,255,255,0.15)"
-                : isConfigured
+                : isConfigured && !isDisabled
                   ? "rgba(110,231,183,0.06)"
                   : "transparent",
               display: "flex",
@@ -62,12 +74,15 @@ export default function NavStrip() {
               position: "relative",
               transition: "all 0.15s",
               fontFamily: "inherit",
+              opacity: isDisabled ? 0.25 : isLocked ? 0.3 : 1,
             }}
             onMouseEnter={(e) => {
-              if (!isActive) e.currentTarget.style.background = "rgba(255,255,255,0.08)";
+              if (!isActive && !isDisabled && !isLocked)
+                e.currentTarget.style.background = "rgba(255,255,255,0.08)";
             }}
             onMouseLeave={(e) => {
-              if (!isActive) e.currentTarget.style.background = "transparent";
+              if (!isActive && !isDisabled && !isLocked)
+                e.currentTarget.style.background = "transparent";
             }}
           >
             {/* Active indicator bar */}
@@ -90,15 +105,17 @@ export default function NavStrip() {
                 name={cat.icon}
                 size={14}
                 color={
-                  isActive
-                    ? "#fff"
-                    : isConfigured
-                      ? "#6ee7b7"
-                      : "rgba(255,255,255,0.25)"
+                  isDisabled
+                    ? "rgba(255,255,255,0.15)"
+                    : isActive
+                      ? "#fff"
+                      : isConfigured
+                        ? "#6ee7b7"
+                        : "rgba(255,255,255,0.25)"
                 }
               />
               {/* Green dot badge for configured (not active) */}
-              {isConfigured && !isActive && (
+              {isConfigured && !isActive && !isDisabled && (
                 <div
                   style={{
                     position: "absolute",
@@ -113,16 +130,35 @@ export default function NavStrip() {
                   }}
                 />
               )}
+              {/* Slash micro-icon for disabled steps */}
+              {isDisabled && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: -2,
+                    right: -4,
+                    width: 8,
+                    height: 8,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <Icon name="slash" size={7} color="rgba(255,255,255,0.3)" />
+                </div>
+              )}
             </div>
             <span
               style={{
                 fontSize: 11,
                 fontWeight: isActive ? 700 : 500,
-                color: isActive
-                  ? "#fff"
-                  : isConfigured
-                    ? "#6ee7b7"
-                    : "rgba(255,255,255,0.3)",
+                color: isDisabled
+                  ? "rgba(255,255,255,0.15)"
+                  : isActive
+                    ? "#fff"
+                    : isConfigured
+                      ? "#6ee7b7"
+                      : "rgba(255,255,255,0.3)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",

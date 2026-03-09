@@ -3,6 +3,10 @@ import { AnimatePresence, motion } from "framer-motion";
 import usePromptStore from "../../store/usePromptStore";
 import { getShellColors } from "../../utils/shellColors";
 import { NAV_PATTERNS, NAV_FINE_TUNE_DIMS } from "./constants";
+import {
+  PRESENTATION_NAV_GROUPS,
+  ONE_PAGER_NAV_OPTIONS,
+} from "../../constants/modeOptions";
 import Icon from "../shared/Icon";
 import NextStepButton from "../shared/NextStepButton";
 
@@ -104,16 +108,154 @@ function DimCard({ dim, value, onChange, expanded, onToggle }) {
   );
 }
 
+// ── Multi-select mode for Presentation & One Pager ──
+function MultiSelectNav({ groups, flat, selections, onToggle, color, c }) {
+  const renderOption = (opt) => {
+    const active = selections.includes(opt.id);
+    return (
+      <button
+        key={opt.id}
+        onClick={() => onToggle(opt.id)}
+        style={{
+          padding: "10px 14px",
+          borderRadius: 10,
+          border: active ? `1.5px solid ${color}` : `1px solid ${c.panelBorder}`,
+          background: active ? `${color}12` : "rgba(255,255,255,0.03)",
+          cursor: "pointer",
+          fontFamily: "inherit",
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          transition: "all 0.15s",
+          width: "100%",
+          textAlign: "left",
+        }}
+      >
+        {/* Checkbox */}
+        <div
+          style={{
+            width: 16,
+            height: 16,
+            borderRadius: 4,
+            border: active ? `2px solid ${color}` : `1.5px solid rgba(255,255,255,0.15)`,
+            background: active ? color : "transparent",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+            transition: "all 0.15s",
+          }}
+        >
+          {active && <Icon name="check" size={9} color="#0c0e14" />}
+        </div>
+        <div>
+          <div style={{ fontSize: 11, fontWeight: active ? 700 : 500, color: active ? color : c.muted }}>
+            {opt.label}
+          </div>
+          <div style={{ fontSize: 9, color: c.muted, marginTop: 2, lineHeight: 1.3 }}>
+            {opt.desc}
+          </div>
+        </div>
+      </button>
+    );
+  };
+
+  if (flat) {
+    return (
+      <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+        {flat.map(renderOption)}
+      </div>
+    );
+  }
+
+  return (
+    <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+      {groups.map((group, gi) => (
+        <div key={gi}>
+          <div style={{
+            fontSize: 10,
+            fontWeight: 600,
+            color: c.dim,
+            textTransform: "uppercase",
+            letterSpacing: ".04em",
+            marginBottom: 8,
+          }}>
+            {group.label}
+          </div>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            {group.options.map(renderOption)}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export default function NavigationSelector() {
   const navStyle = usePromptStore((s) => s.navStyle);
   const setNavStyle = usePromptStore((s) => s.setNavStyle);
   const setNavFineTune = usePromptStore((s) => s.setNavFineTune);
   const clearNavStyle = usePromptStore((s) => s.clearNavStyle);
+  const navSelections = usePromptStore((s) => s.navSelections);
+  const setNavSelections = usePromptStore((s) => s.setNavSelections);
+  const clearNavSelections = usePromptStore((s) => s.clearNavSelections);
+  const outputType = usePromptStore((s) => s.outputType);
   const shellMode = usePromptStore((s) => s.shellMode);
   const c = getShellColors(shellMode === "light");
 
   const [expDim, setExpDim] = useState(null);
 
+  const SECTION_COLOR = "#67e8f9";
+
+  // ── Presentation or One Pager: multi-select mode ──
+  if (outputType === "presentation" || outputType === "one-pager") {
+    const selections = navSelections || [];
+
+    const handleToggle = (id) => {
+      const next = selections.includes(id)
+        ? selections.filter((s) => s !== id)
+        : [...selections, id];
+      setNavSelections(next.length > 0 ? next : null);
+      if (next.length === 0) clearNavSelections();
+    };
+
+    return (
+      <>
+        <div style={{ marginBottom: 12 }}>
+          <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>
+            Navigation
+          </div>
+          <div style={{ fontSize: 11, color: c.muted }}>
+            {outputType === "presentation"
+              ? "How users move through and orient within your deck. Select any combination."
+              : "How users navigate your one-pager. Select any combination."}
+          </div>
+        </div>
+
+        <MultiSelectNav
+          groups={outputType === "presentation" ? PRESENTATION_NAV_GROUPS : undefined}
+          flat={outputType === "one-pager" ? ONE_PAGER_NAV_OPTIONS : undefined}
+          selections={selections}
+          onToggle={handleToggle}
+          color={SECTION_COLOR}
+          c={c}
+        />
+
+        {selections.length > 0 && (
+          <div style={{ marginTop: 12, fontSize: 10, color: c.muted }}>
+            {selections.length} option{selections.length !== 1 ? "s" : ""} selected
+          </div>
+        )}
+
+        <NextStepButton
+          targetCategory={outputType === "presentation" ? "animation" : "templates"}
+          label={outputType === "presentation" ? "Animation" : "Templates"}
+        />
+      </>
+    );
+  }
+
+  // ── App: single-select mode (existing behavior) ──
   const selectedPattern = navStyle
     ? NAV_PATTERNS.find((p) => p.id === navStyle.patternId)
     : null;
@@ -124,8 +266,6 @@ export default function NavigationSelector() {
     : -1;
   const selectedRow = selectedIndex >= 0 ? Math.floor(selectedIndex / 4) : -1;
   const insertAfterIndex = selectedRow >= 0 ? (selectedRow + 1) * 4 - 1 : -1;
-
-  const SECTION_COLOR = "#67e8f9";
 
   return (
     <>
@@ -161,32 +301,9 @@ export default function NavigationSelector() {
                   position: "relative",
                 }}
               >
-                {/* Thumbnail preview */}
-                <div style={{ height: 50, overflow: "hidden" }}>
-                  {Thumb && <Thumb accent={pattern.color} />}
-                </div>
-
-                {/* Label + tagline */}
-                <div style={{
-                  padding: "8px 8px",
-                  borderTop: `1px solid ${active ? `${SECTION_COLOR}25` : c.panelBorder}`,
-                }}>
-                  <div style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: active ? c.text : c.muted,
-                    marginBottom: 2,
-                  }}>
-                    {pattern.label}
-                  </div>
-                  <div style={{
-                    fontSize: 8,
-                    color: c.muted,
-                    lineHeight: 1.3,
-                    opacity: active ? 0.8 : 0.5,
-                  }}>
-                    {pattern.tagline}
-                  </div>
+                {/* Styled preview with real content */}
+                <div style={{ height: 110, overflow: "hidden" }}>
+                  {Thumb && <Thumb accent={pattern.color} label={pattern.label} desc={pattern.tagline} />}
                 </div>
 
                 {/* Check badge */}

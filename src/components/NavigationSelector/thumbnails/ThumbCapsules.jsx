@@ -1,82 +1,72 @@
-export default function ThumbCapsules({ accent }) {
+export default function ThumbCapsules({ accent, label, desc }) {
+  const font = "'DM Sans', sans-serif";
+  const muted = "rgba(255,255,255,0.35)";
+  const pills = ["All", "Active", "Draft", "Archived"];
+
   return (
     <div
       style={{
         height: "100%",
         background: "#0d1018",
-        padding: 4,
         display: "flex",
         flexDirection: "column",
-        gap: 3,
         borderRadius: 4,
         overflow: "hidden",
+        fontFamily: font,
+        padding: "7px 6px 5px",
+        gap: 6,
       }}
     >
-      {/* Pill selector container */}
+      {/* Pill row */}
       <div
         style={{
           display: "flex",
           gap: 3,
-          padding: 3,
-          border: "1px solid rgba(255,255,255,0.06)",
-          borderRadius: 3,
           flexShrink: 0,
-          alignItems: "center",
-          justifyContent: "center",
         }}
       >
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            style={{
-              width: i === 2 ? 18 : i === 0 ? 14 : 16,
-              height: 6,
-              borderRadius: 999,
-              background: i === 2 ? accent : "transparent",
-              border:
-                i === 2
-                  ? "none"
-                  : "1px solid rgba(255,255,255,0.12)",
-              opacity: i === 2 ? 1 : 0.5,
-            }}
-          />
-        ))}
+        {pills.map((pill, i) => {
+          const active = i === 1;
+          return (
+            <span
+              key={pill}
+              style={{
+                fontSize: 7,
+                padding: "2px 5px",
+                borderRadius: 999,
+                background: active ? accent : "transparent",
+                color: active ? "#0d1018" : muted,
+                border: active ? "none" : "1px solid rgba(255,255,255,0.12)",
+                whiteSpace: "nowrap",
+                lineHeight: 1,
+                fontWeight: active ? 600 : 400,
+              }}
+            >
+              {pill}
+            </span>
+          );
+        })}
       </div>
 
-      {/* Content area */}
+      {/* Content grid 2x2 */}
       <div
         style={{
           flex: 1,
-          display: "flex",
-          flexDirection: "column",
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gridTemplateRows: "1fr 1fr",
           gap: 3,
-          paddingTop: 1,
         }}
       >
-        <div
-          style={{
-            height: 3,
-            width: "55%",
-            background: "rgba(255,255,255,0.16)",
-            borderRadius: 1,
-          }}
-        />
-        <div
-          style={{
-            height: 2,
-            width: "85%",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: 1,
-          }}
-        />
-        <div
-          style={{
-            height: 2,
-            width: "65%",
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: 1,
-          }}
-        />
+        {[0, 1, 2, 3].map((i) => (
+          <div
+            key={i}
+            style={{
+              background: "rgba(255,255,255,0.04)",
+              borderRadius: 2,
+            }}
+          />
+        ))}
       </div>
     </div>
   );

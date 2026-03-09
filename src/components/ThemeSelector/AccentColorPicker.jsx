@@ -11,7 +11,7 @@ const LIGHT_ACCENTS = new Set([
   "#84cc16",
 ]);
 
-export default function AccentColorPicker({ options, value, onChange, themeBg }) {
+export default function AccentColorPicker({ options, value, onChange, themeBg, label }) {
   const trackRef = useRef(null);
   const [hoverIndex, setHoverIndex] = useState(null);
 
@@ -41,7 +41,7 @@ export default function AccentColorPicker({ options, value, onChange, themeBg })
       {/* Header row */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 10 }}>
         <div style={{ fontSize: 9, fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.08em", color: labelColor }}>
-          Accent Color
+          {label || "Accent Color"}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: 6, fontSize: 10, fontFamily: "'JetBrains Mono', monospace", color: mutedColor }}>
           <div style={{ width: 12, height: 12, borderRadius: 3, background: value, border: "1px solid rgba(128,128,128,0.2)" }} />

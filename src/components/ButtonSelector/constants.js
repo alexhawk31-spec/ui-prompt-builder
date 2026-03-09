@@ -113,6 +113,40 @@ export const BTN_FINE_TUNE_DIMS = {
       { id: "outline", label: "Outline", desc: "Active segment gets accent border, no fill" },
     ],
   },
+
+  // ── Frost-specific ──
+  blur: {
+    label: "Blur",
+    desc: "Glass blur intensity",
+    color: "#67e8f9",
+    opts: [
+      { id: "light", label: "Light", desc: "Subtle 8px blur — barely frosted" },
+      { id: "heavy", label: "Heavy", desc: "Thick 20px blur with saturation boost" },
+    ],
+  },
+
+  // ── Ink-specific ──
+  underline: {
+    label: "Underline",
+    desc: "Underline behavior",
+    color: "#94a3b8",
+    opts: [
+      { id: "hover", label: "On Hover", desc: "Underline appears on hover only" },
+      { id: "always", label: "Always", desc: "Underline always visible" },
+      { id: "animated", label: "Animated", desc: "Underline slides in from left on hover" },
+    ],
+  },
+
+  // ── Brick-specific ──
+  depth: {
+    label: "Depth",
+    desc: "3D bottom border thickness",
+    color: "#fb923c",
+    opts: [
+      { id: "shallow", label: "Shallow", desc: "3px bottom border — subtle 3D" },
+      { id: "deep", label: "Deep", desc: "5px bottom border — thick pushable depth" },
+    ],
+  },
 };
 
 /* ─── Prompt Map ─── */
@@ -174,6 +208,19 @@ export const BTN_PROMPT_MAP = {
     cool: "shift the accent -25° cooler (toward blue/teal) for button fills and hover states",
     muted: "desaturate the accent ~40% for softer, more muted button colors",
     complementary: "use the complementary color (hue +180°) of the theme accent for buttons",
+  },
+  blur: {
+    light: "backdrop-filter: blur(8px) — light frosted glass, 60% white/10% black bg",
+    heavy: "backdrop-filter: blur(20px) saturate(1.4) — thick frosted glass, 40% white bg, saturated backdrop",
+  },
+  underline: {
+    hover: "text-decoration: underline appears on hover only, underline-offset: 4px",
+    always: "text-decoration: underline always visible, underline-offset: 4px, decoration-thickness: 1.5px",
+    animated: "underline animates in from left on hover via pseudo-element (width 0→100%, transition 0.2s)",
+  },
+  depth: {
+    shallow: "border-bottom: 3px solid — subtle 3D press depth",
+    deep: "border-bottom: 5px solid — thick 3D pushable depth, translateY(4px) + border-bottom: 1px on active",
   },
 };
 
@@ -267,5 +314,49 @@ export const BTN_STYLES = [
     dims: ["size", "corners", "labelWeight", "shadow", "hover", "press", "accent", "segmentCount", "activeFill"],
     defaults: { size: "medium", corners: "rounded", labelWeight: "semibold", shadow: "none", hover: "darken", press: "sink", accent: "theme", segmentCount: "two", activeFill: "solid" },
     basePrompt: "Style buttons as segmented toggle controls. Container: subtle background at 4% white, 1px border at 6% white, shared border-radius. Segments sit inside the container separated by 1px dividers. Active segment: filled accent or tinted, with a smooth sliding indicator on transition. Inactive segments: transparent, muted text. This replaces separate Primary/Secondary/Tertiary buttons with a unified selector.",
+  },
+  {
+    id: "frost",
+    label: "Frost",
+    tagline: "Glass and light",
+    desc: "Frosted glass buttons — translucent blur with subtle borders",
+    icon: "snowflake",
+    color: "#67e8f9",
+    dims: ["size", "corners", "labelWeight", "icon", "shadow", "hover", "press", "accent", "blur"],
+    defaults: { size: "medium", corners: "rounded", labelWeight: "semibold", icon: "none", shadow: "subtle", hover: "lighten", press: "sink", accent: "theme", blur: "light" },
+    basePrompt: "Style buttons with frosted glass treatment. Primary: backdrop-filter: blur(12px), rgba(255,255,255,0.12) background, 1px solid rgba(255,255,255,0.18) border, white text. Secondary: same blur but rgba(255,255,255,0.06) background, muted text. Tertiary: no blur, transparent, accent text. All glass buttons need a background with some visual texture behind them to make the blur visible.",
+  },
+  {
+    id: "ink",
+    label: "Ink",
+    tagline: "Quiet and linked",
+    desc: "Text-only with underline — minimal, hyperlink-inspired CTAs",
+    icon: "underline",
+    color: "#94a3b8",
+    dims: ["size", "labelWeight", "hover", "press", "accent", "underline"],
+    defaults: { size: "medium", labelWeight: "semibold", hover: "darken", press: "sink", accent: "theme", underline: "hover" },
+    basePrompt: "Style buttons as text-only link-style CTAs with zero background or border. Primary: accent text, underline on hover (underline-offset: 4px). Secondary: muted text, underline on hover. Tertiary: dimmer muted text, underline on hover. No padding, no border, no background — purely typographic. The underline is the only visual affordance.",
+  },
+  {
+    id: "brick",
+    label: "Brick",
+    tagline: "Push me down",
+    desc: "3D raised buttons — thick bottom border creates a pushable look",
+    icon: "box",
+    color: "#fb923c",
+    dims: ["size", "corners", "labelWeight", "icon", "shadow", "accent", "depth"],
+    defaults: { size: "medium", corners: "rounded", labelWeight: "bold", icon: "none", shadow: "none", accent: "theme", depth: "shallow" },
+    basePrompt: "Style buttons with 3D raised/pushable treatment. Primary: solid accent fill, thick bottom border (3-5px) in a darker shade of the accent (filter: brightness(0.7)), creates a physical pushable look. On active/press: translateY(2-4px) and reduce bottom border to 1px — the button visually presses down. Secondary: lighter fill, accent-tinted bottom border. Tertiary: transparent, bottom border only. The depth creates satisfying tactile feedback.",
+  },
+  {
+    id: "duo",
+    label: "Duo",
+    tagline: "Two-tone split",
+    desc: "Split button — icon zone + label zone in contrasting fills",
+    icon: "columns",
+    color: "#e879f9",
+    dims: ["size", "corners", "labelWeight", "shadow", "hover", "press", "accent"],
+    defaults: { size: "medium", corners: "rounded", labelWeight: "semibold", shadow: "subtle", hover: "darken", press: "sink", accent: "theme" },
+    basePrompt: "Style buttons as two-tone split buttons. Each button has two visually distinct zones side by side: an icon zone (narrower, darker or contrasting fill) and a label zone (wider, primary fill). Primary: accent fill on label zone, darker accent on icon zone, 1px divider between them, shared border-radius. Secondary: transparent label zone with accent border, accent-tinted icon zone. Tertiary: transparent both zones, accent text, subtle divider only. The split creates a clear visual hierarchy between the action icon and the label text.",
   },
 ];

@@ -78,6 +78,36 @@ export const THEMES = [
     desc: "Near-black, subtle silver tones",
     accentOptions: ["#b0b0c0", "#818cf8", "#22d3ee", "#f472b6", "#34d399", "#fbbf24"],
   },
+  {
+    id: "blackout", name: "Blackout", mode: "dark",
+    preview: { bg: "#0a0a0a", card: "#161616", accent: "#ff3366", secondary: "#00e5ff", text: "#f0f0f0" },
+    desc: "Pure black canvas — go wild with color",
+    accentOptions: ["#ff3366", "#00e5ff", "#aaff00", "#ff6b00", "#bf5af2", "#ffcc00"],
+  },
+  {
+    id: "soot", name: "Soot", mode: "dark",
+    preview: { bg: "#1a1a1a", card: "#242424", accent: "#a855f7", secondary: "#fb923c", text: "#e8e8e8" },
+    desc: "Charcoal simplicity, any accent pops",
+    accentOptions: ["#a855f7", "#fb923c", "#22d3ee", "#f43f5e", "#84cc16", "#fbbf24"],
+  },
+  {
+    id: "wet-asphalt", name: "Wet Asphalt", mode: "dark",
+    preview: { bg: "#1e2028", card: "#282a34", accent: "#06d6a0", secondary: "#ef476f", text: "#e0e0e8" },
+    desc: "Cool dark gray, neon accent playground",
+    accentOptions: ["#06d6a0", "#ef476f", "#ffd166", "#118ab2", "#e056ff", "#73d2ff"],
+  },
+  {
+    id: "deep-purple", name: "Deep Purple", mode: "dark",
+    preview: { bg: "#0e0a1a", card: "#1a1230", accent: "#a855f7", secondary: "#7c3aed", text: "#ede9fe" },
+    desc: "Rich violet depths, electric purple glow",
+    accentOptions: ["#a855f7", "#7c3aed", "#c084fc", "#8b5cf6", "#d946ef", "#6d28d9"],
+  },
+  {
+    id: "plum-noir", name: "Plum Noir", mode: "dark",
+    preview: { bg: "#120c18", card: "#1e1428", accent: "#d946ef", secondary: "#a855f7", text: "#f3e8ff" },
+    desc: "Dark plum, fuchsia sparks, moody",
+    accentOptions: ["#d946ef", "#a855f7", "#f472b6", "#818cf8", "#c084fc", "#e879f9"],
+  },
   // ── LIGHT ──
   {
     id: "clean-white", name: "Clean White", mode: "light",
@@ -156,5 +186,23 @@ export const THEMES = [
     preview: { bg: "#f5f7f3", card: "#ffffff", accent: "#4d7c0f", secondary: "#65a30d", text: "#1c1917" },
     desc: "Muted greens, studio calm, design-forward",
     accentOptions: ["#4d7c0f", "#65a30d", "#84cc16", "#16a34a", "#15803d", "#059669"],
+  },
+  {
+    id: "blank-canvas", name: "Blank Canvas", mode: "light",
+    preview: { bg: "#ffffff", card: "#fafafa", accent: "#e11d48", secondary: "#7c3aed", text: "#171717" },
+    desc: "Pure white — your accent, your rules",
+    accentOptions: ["#e11d48", "#7c3aed", "#0891b2", "#ea580c", "#16a34a", "#6d28d9"],
+  },
+  {
+    id: "warm-paper", name: "Warm Paper", mode: "light",
+    preview: { bg: "#faf8f5", card: "#ffffff", accent: "#d946ef", secondary: "#0ea5e9", text: "#1c1917" },
+    desc: "Cream paper, electric accent energy",
+    accentOptions: ["#d946ef", "#0ea5e9", "#f97316", "#10b981", "#e11d48", "#8b5cf6"],
+  },
+  {
+    id: "fog", name: "Fog", mode: "light",
+    preview: { bg: "#f0f1f5", card: "#fafbfd", accent: "#6366f1", secondary: "#ec4899", text: "#18181b" },
+    desc: "Soft gray mist, vivid accents cut through",
+    accentOptions: ["#6366f1", "#ec4899", "#14b8a6", "#f59e0b", "#ef4444", "#06b6d4"],
   },
 ];

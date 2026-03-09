@@ -4,12 +4,17 @@ import { MOOD_PRESETS } from "../components/MoodSelector/constants";
 import { CARD_STYLES } from "../components/ComponentStyleSelector/constants";
 import { NAV_PATTERNS } from "../components/NavigationSelector/constants";
 import { BTN_STYLES } from "../components/ButtonSelector/constants";
+import { DATA_STYLES } from "../components/DataDisplaySelector/constants";
 
 const usePromptStore = create((set, get) => ({
   // Shell mode (light/dark app chrome — independent of theme selection)
   shellMode: "dark",
   toggleShellMode: () =>
     set((state) => ({ shellMode: state.shellMode === "dark" ? "light" : "dark" })),
+
+  // Admin portal (hidden behind easter egg)
+  adminMode: false,
+  setAdminMode: (val) => set({ adminMode: val }),
 
   // Preview mode (light/dark for purpose previews — controlled by theme section)
   previewMode: "dark",
@@ -18,7 +23,10 @@ const usePromptStore = create((set, get) => ({
 
   // Intro / landing page
   showIntro: true,
-  dismissIntro: () => set({ showIntro: false, onboarded: true }),
+  dismissIntro: () => {
+    set({ showIntro: false, onboarded: true });
+    window.location.hash = get().activeCategory;
+  },
 
   // Onboarding
   onboarded: false,
@@ -28,13 +36,77 @@ const usePromptStore = create((set, get) => ({
     } else {
       set({ onboarded: true });
     }
+    window.location.hash = get().activeCategory;
   },
 
   // Navigation
   activeCategory: "appType",
-  setActiveCategory: (val) => set({ activeCategory: val }),
+  setActiveCategory: (val) => {
+    set({ activeCategory: val });
+    window.location.hash = val;
+  },
 
-  // App type — what are you building?
+  // ── Output Type (Project step) ──
+  outputType: null, // "app" | "presentation" | "one-pager" | null
+  outputPurpose: null, // string — purpose within the output type
+  buildMode: "new-build", // "new-build" | "upgrade" (Presentation + One Pager only)
+  appStarterEnabled: false, // App only — include vibe coding starter prompt
+
+  setOutputType: (type) => {
+    const current = get().outputType;
+    if (current && current !== type) {
+      // Reset all configured steps when changing output type
+      set({
+        outputType: type,
+        outputPurpose: null,
+        buildMode: "new-build",
+        appStarterEnabled: false,
+        selectedPurpose: null,
+        theme: null,
+        modeFilter: "dark",
+        previewMode: "dark",
+        customAccents: {},
+        customColors: {},
+        moodPreset: null,
+        moodDimensions: null,
+        moodCustom: false,
+        cardStyle: null,
+        navStyle: null,
+        navSelections: null,
+        buttonStyle: null,
+        dataStyle: null,
+        animation: null,
+        faviconDesc: "",
+        configuredSections: [],
+      });
+    } else {
+      set({ outputType: type });
+    }
+    get().autoInclude("appType");
+  },
+  setOutputPurpose: (purpose) => {
+    set({ outputPurpose: purpose });
+    get().autoInclude("appType");
+  },
+  setBuildMode: (mode) => set({ buildMode: mode }),
+  setAppStarterEnabled: (val) => set({ appStarterEnabled: val }),
+
+  // Multi-select navigation for Presentation & One Pager
+  navSelections: null, // string[] — selected nav option IDs
+
+  setNavSelections: (selections) => {
+    set({ navSelections: selections });
+    if (selections && selections.length > 0) {
+      get().autoInclude("navigation");
+    }
+  },
+  clearNavSelections: () =>
+    set((state) => ({
+      navSelections: null,
+      configuredSections: state.configuredSections.filter((id) => id !== "navigation"),
+    })),
+
+  // App type — what are you building? (legacy compat)
   appType: null,
   setAppType: (val) => {
     set({ appType: val });
@@ -43,11 +115,15 @@ const usePromptStore = create((set, get) => ({
   clearAppType: () =>
     set((state) => ({
       appType: null,
+      outputType: null,
+      outputPurpose: null,
       selectedPurpose: null,
+      buildMode: "new-build",
+      appStarterEnabled: false,
       configuredSections: state.configuredSections.filter((id) => id !== "appType"),
     })),
 
-  // Purpose — what are you building?
+  // Purpose — what are you building? (legacy compat, used by ProjectPicker)
   selectedPurpose: null,
   setPurpose: (id) => {
     set({ selectedPurpose: id });
@@ -73,17 +149,11 @@ const usePromptStore = create((set, get) => ({
   showSummary: false,
   setShowSummary: (val) => set({ showSummary: val }),
 
-  // App description & naming
-  appDescription: "",
-  appName: "",
-  nameOptions: [],
-  loadingNames: false,
-  nameError: "",
-
   // Theme selections
   theme: null,
   modeFilter: "dark",
   customAccents: {},
+  customColors: {}, // { [themeId]: { bg?, card?, secondary?, text? } }
 
   // Mood & Feel — 4-dimension system with preset shortcuts
   moodPreset: null,
@@ -92,22 +162,17 @@ const usePromptStore = create((set, get) => ({
   cardStyle: null,
   navStyle: null,
   buttonStyle: null,
+  dataStyle: null,
   animation: null,
-  customNotes: "",
-  awsGuidelines: false,
+  faviconDesc: "",
+
+  // Templates
+  templates: [],
+  pendingSubmissions: [],
+  templateLoading: false,
 
   // Output state
   copied: false,
-
-  // App description actions
-  setAppDescription: (val) => {
-    set({ appDescription: val });
-    if (val.trim()) get().autoInclude("appDescription");
-  },
-  setAppName: (val) => set({ appName: val }),
-  setNameOptions: (val) => set({ nameOptions: val }),
-  setLoadingNames: (val) => set({ loadingNames: val }),
-  setNameError: (val) => set({ nameError: val }),
 
   // Theme actions
   setTheme: (id) => {
@@ -122,16 +187,29 @@ const usePromptStore = create((set, get) => ({
     set((state) => ({
       customAccents: { ...state.customAccents, [themeId]: color },
     })),
+  setCustomColor: (themeId, channel, color) =>
+    set((state) => {
+      if (channel === "accent") {
+        return { customAccents: { ...state.customAccents, [themeId]: color } };
+      }
+      return {
+        customColors: {
+          ...state.customColors,
+          [themeId]: { ...(state.customColors[themeId] || {}), [channel]: color },
+        },
+      };
+    }),
 
-  // Returns the base theme object with the custom accent applied
+  // Returns the base theme object with all custom colors applied
   getEffectiveTheme: () => {
-    const { theme, customAccents } = get();
+    const { theme, customAccents, customColors } = get();
     const base = THEMES.find((t) => t.id === theme);
     if (!base) return null;
+    const overrides = customColors[theme] || {};
     const accent = customAccents[theme] || base.preview.accent;
     return {
       ...base,
-      preview: { ...base.preview, accent },
+      preview: { ...base.preview, ...overrides, accent },
     };
   },
 
@@ -139,7 +217,12 @@ const usePromptStore = create((set, get) => ({
   setMoodPreset: (preset) => {
     set({
       moodPreset: preset.id,
-      moodDimensions: { ...preset.v },
+      moodDimensions: {
+        density: preset.density,
+        typography: preset.typography,
+        interaction: preset.interaction,
+        embellishment: preset.embellishment,
+      },
       moodCustom: false,
     });
     get().autoInclude("mood");
@@ -148,9 +231,9 @@ const usePromptStore = create((set, get) => ({
     const { moodDimensions } = get();
     const base = moodDimensions || { density: "balanced", typography: "clean", interaction: "smooth", embellishment: "minimal" };
     const next = { ...base, [dim]: val };
-    // Check if next matches any preset
+    const dimKeys = ["density", "typography", "interaction", "embellishment"];
     const match = MOOD_PRESETS.find((p) =>
-      Object.keys(p.v).every((k) => p.v[k] === next[k])
+      dimKeys.every((k) => p[k] === next[k])
     );
     set({
       moodDimensions: next,
@@ -247,25 +330,48 @@ const usePromptStore = create((set, get) => ({
     get().autoInclude("buttons");
   },
 
+  // Data display style actions
+  setDataStyle: (styleObj) => {
+    set({
+      dataStyle: {
+        styleId: styleObj.id,
+        fineTune: { ...styleObj.defaults },
+        custom: false,
+      },
+    });
+    get().autoInclude("data");
+  },
+  setDataFineTune: (dimId, value) => {
+    const { dataStyle } = get();
+    if (!dataStyle) return;
+    const style = DATA_STYLES.find((s) => s.id === dataStyle.styleId);
+    const nextFineTune = { ...dataStyle.fineTune, [dimId]: value };
+    const isCustom = style
+      ? Object.keys(style.defaults).some((k) => nextFineTune[k] !== style.defaults[k])
+      : true;
+    set({
+      dataStyle: {
+        ...dataStyle,
+        fineTune: nextFineTune,
+        custom: isCustom,
+      },
+    });
+    get().autoInclude("data");
+  },
+
   // Simple setters (with auto-include)
   setAnimation: (val) => {
     set({ animation: val });
     get().autoInclude("animation");
   },
-  setCustomNotes: (val) => {
-    set({ customNotes: val });
-    if (val.trim()) get().autoInclude("customNotes");
-  },
-  setAwsGuidelines: (val) => {
-    set({ awsGuidelines: val });
-    if (val) get().autoInclude("awsGuidelines");
-  },
+  setFaviconDesc: (val) => set({ faviconDesc: val }),
 
   // Clear actions (reset a single category and remove from configured)
   clearTheme: () =>
     set((state) => ({
       theme: null,
       customAccents: {},
+      customColors: {},
       configuredSections: state.configuredSections.filter((id) => id !== "theme"),
     })),
   clearMood: () =>
@@ -283,6 +389,7 @@ const usePromptStore = create((set, get) => ({
   clearNavStyle: () =>
     set((state) => ({
       navStyle: null,
+      navSelections: null,
       configuredSections: state.configuredSections.filter((id) => id !== "navigation"),
     })),
   clearButtonStyle: () =>
@@ -290,54 +397,152 @@ const usePromptStore = create((set, get) => ({
       buttonStyle: null,
       configuredSections: state.configuredSections.filter((id) => id !== "buttons"),
     })),
+  clearDataStyle: () =>
+    set((state) => ({
+      dataStyle: null,
+      configuredSections: state.configuredSections.filter((id) => id !== "data"),
+    })),
   clearAnimation: () =>
     set((state) => ({
       animation: null,
       configuredSections: state.configuredSections.filter((id) => id !== "animation"),
     })),
-  clearAppDescription: () =>
-    set((state) => ({
-      appDescription: "",
-      appName: "",
-      nameOptions: [],
-      nameError: "",
-      configuredSections: state.configuredSections.filter((id) => id !== "appDescription"),
-    })),
-  clearAwsGuidelines: () =>
-    set((state) => ({
-      awsGuidelines: false,
-      configuredSections: state.configuredSections.filter((id) => id !== "awsGuidelines"),
-    })),
-  clearCustomNotes: () =>
-    set((state) => ({
-      customNotes: "",
-      configuredSections: state.configuredSections.filter((id) => id !== "customNotes"),
-    })),
-
   // Reset everything
   resetAll: () =>
     set({
       appType: null,
       selectedPurpose: null,
+      outputType: null,
+      outputPurpose: null,
+      buildMode: "new-build",
+      appStarterEnabled: false,
       previewMode: "dark",
       theme: null,
       modeFilter: "dark",
       customAccents: {},
+      customColors: {},
       moodPreset: null,
       moodDimensions: null,
       moodCustom: false,
       cardStyle: null,
       navStyle: null,
+      navSelections: null,
       buttonStyle: null,
+      dataStyle: null,
       animation: null,
-      customNotes: "",
-      awsGuidelines: false,
-      appDescription: "",
-      appName: "",
-      nameOptions: [],
-      nameError: "",
+      faviconDesc: "",
       configuredSections: [],
     }),
+
+  // Template actions
+  loadTemplates: async () => {
+    set({ templateLoading: true });
+    try {
+      const [tRes, pRes] = await Promise.all([
+        fetch("/data/templates.json").then((r) => r.json()),
+        fetch("/data/pending-submissions.json").then((r) => r.json()),
+      ]);
+      set({ templates: tRes, pendingSubmissions: pRes, templateLoading: false });
+    } catch {
+      set({ templateLoading: false });
+    }
+  },
+  applyTemplate: (template) => {
+    const cfg = template.config;
+    const keyMap = {
+      selectedPurpose: "appType",
+      theme: "theme",
+      moodPreset: "mood",
+      moodDimensions: "mood",
+      cardStyle: "cards",
+      navStyle: "navigation",
+      buttonStyle: "buttons",
+      dataStyle: "data",
+      animation: "animation",
+    };
+    const sections = Object.entries(cfg)
+      .filter(([, v]) => v != null && v !== false)
+      .map(([k]) => keyMap[k])
+      .filter(Boolean)
+      .filter((v, i, a) => a.indexOf(v) === i);
+    set({
+      appType: cfg.appType || null,
+      selectedPurpose: cfg.selectedPurpose || null,
+      outputType: cfg.outputType || null,
+      outputPurpose: cfg.outputPurpose || null,
+      buildMode: cfg.buildMode || "new-build",
+      appStarterEnabled: cfg.appStarterEnabled || false,
+      theme: cfg.theme || null,
+      modeFilter: cfg.modeFilter || "dark",
+      previewMode: cfg.modeFilter || "dark",
+      customAccents: cfg.customAccents || {},
+      customColors: cfg.customColors || {},
+      moodPreset: cfg.moodPreset || null,
+      moodDimensions: cfg.moodDimensions || null,
+      moodCustom: false,
+      cardStyle: cfg.cardStyle || null,
+      navStyle: cfg.navStyle || null,
+      navSelections: cfg.navSelections || null,
+      buttonStyle: cfg.buttonStyle || null,
+      dataStyle: cfg.dataStyle || null,
+      animation: cfg.animation || null,
+      configuredSections: sections,
+    });
+  },
+  captureCurrentConfig: () => {
+    const s = get();
+    return {
+      appType: s.appType,
+      selectedPurpose: s.selectedPurpose,
+      theme: s.theme,
+      modeFilter: s.modeFilter,
+      customAccents: s.customAccents,
+      customColors: s.customColors,
+      moodPreset: s.moodPreset,
+      moodDimensions: s.moodDimensions,
+      cardStyle: s.cardStyle,
+      navStyle: s.navStyle,
+      buttonStyle: s.buttonStyle,
+      dataStyle: s.dataStyle,
+      animation: s.animation,
+    };
+  },
+  submitTemplate: (name, description, tags) => {
+    const config = get().captureCurrentConfig();
+    const submission = {
+      id: `sub-${Date.now()}`,
+      name,
+      description,
+      author: "community",
+      tags,
+      createdAt: new Date().toISOString().split("T")[0],
+      config,
+      status: "pending",
+    };
+    set((state) => ({
+      pendingSubmissions: [...state.pendingSubmissions, submission],
+    }));
+    return submission;
+  },
+  approveSubmission: (submissionId) => {
+    const submission = get().pendingSubmissions.find((s) => s.id === submissionId);
+    if (!submission) return;
+    const { status, ...template } = submission;
+    set((state) => ({
+      templates: [...state.templates, template],
+      pendingSubmissions: state.pendingSubmissions.filter((s) => s.id !== submissionId),
+    }));
+  },
+  rejectSubmission: (submissionId) => {
+    set((state) => ({
+      pendingSubmissions: state.pendingSubmissions.filter((s) => s.id !== submissionId),
+    }));
+  },
+  deleteTemplate: (templateId) => {
+    set((state) => ({
+      templates: state.templates.filter((t) => t.id !== templateId),
+    }));
+  },
 
   // Output actions
   setCopied: (val) => set({ copied: val }),

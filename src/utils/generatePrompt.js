@@ -1,39 +1,60 @@
-import { THEMES, AWS_GUIDELINES } from "../constants";
-import { PURPOSE_PROMPT_DESC } from "../components/PurposeSelector/constants";
+import { THEMES } from "../constants";
+import { PROJECT_TYPES } from "../components/ProjectPicker/constants";
 import { MOOD_PRESETS, MOOD_PROMPT_MAP } from "../components/MoodSelector/constants";
 import { CARD_STYLES, CARD_FINE_TUNE_DIMS, CARD_PROMPT_MAP } from "../components/ComponentStyleSelector/constants";
 import { NAV_PATTERNS, NAV_FINE_TUNE_DIMS, NAV_PROMPT_MAP } from "../components/NavigationSelector/constants";
 import { BTN_STYLES, BTN_FINE_TUNE_DIMS, BTN_PROMPT_MAP } from "../components/ButtonSelector/constants";
+import { DATA_STYLES, DATA_FINE_TUNE_DIMS, DATA_PROMPT_MAP } from "../components/DataDisplaySelector/constants";
+import {
+  PRESENTATION_CARD_PROMPT_MAP,
+  ONE_PAGER_CARD_PROMPT_MAP,
+  PRESENTATION_DATA_PROMPT_MAP,
+  ONE_PAGER_DATA_PROMPT_MAP,
+  PRESENTATION_NAV_PROMPT_MAP,
+  ONE_PAGER_NAV_PROMPT_MAP,
+  PRESENTATION_ANIMATION_PROMPT_MAP,
+} from "../constants/modeOptions";
 
 /**
  * Generate the prompt snippet for a single category.
  * Returns empty string if that category isn't configured.
  */
 export function generateCategorySnippet(config, categoryId) {
-  const { configuredSections = [], selectedPurpose, theme, customAccents, modeFilter, moodPreset, moodDimensions, moodCustom, cardStyle, navStyle, buttonStyle, animation, customNotes, appName, appDescription, awsGuidelines } = config;
+  const { configuredSections = [], selectedPurpose, theme, customAccents, customColors, modeFilter, moodPreset, moodDimensions, moodCustom, cardStyle, dataStyle, navStyle, navSelections, buttonStyle, animation, faviconDesc, outputType, outputPurpose, buildMode, appStarterEnabled } = config;
 
   // If configuredSections is populated, only include sections that are toggled on
   if (configuredSections.length > 0 && !configuredSections.includes(categoryId)) return "";
 
   switch (categoryId) {
     case "appType": {
+      // New output type system — project context is folded into the opener in generatePrompt()
+      if (outputType) return "";
+      // Legacy fallback
       if (!selectedPurpose) return "";
-      const desc = PURPOSE_PROMPT_DESC[selectedPurpose];
-      return `${desc}\n`;
+      const pt = PROJECT_TYPES.find((x) => x.id === selectedPurpose);
+      if (!pt) return "";
+      let s = `## Project Type — ${pt.name}\n${pt.promptContext}\n`;
+      if (faviconDesc) s += `- Favicon / App Icon: ${faviconDesc}\n`;
+      return s;
     }
     case "theme": {
       const mode = modeFilter || "dark";
       if (!theme) return `Use ${mode} mode.\n`;
       const t = THEMES.find((x) => x.id === theme);
+      const co = customColors?.[theme] || {};
       const accent = customAccents?.[theme] || t?.preview.accent;
-      const sec = t?.preview.secondary ? `\n- Secondary accent: \`${t.preview.secondary}\` — supporting color for charts, badges, subtle highlights` : "";
-      return `## Color Palette\n${t?.name} theme (${mode} mode) — ${t?.desc}.\n- Background: \`${t?.preview.bg}\`\n- Cards / surfaces: \`${t?.preview.card}\`\n- Primary accent: \`${accent}\` — use sparingly (CTAs, active states, key data)${sec}\n- Text: \`${t?.preview.text}\`\n`;
+      const bg = co.bg || t?.preview.bg;
+      const card = co.card || t?.preview.card;
+      const text = co.text || t?.preview.text;
+      const sec = (co.secondary || t?.preview.secondary);
+      const secLine = sec ? `\n- Secondary accent: \`${sec}\` — supporting color for charts, badges, subtle highlights` : "";
+      return `## Color Palette\n${t?.name} theme (${mode} mode) — ${t?.desc}.\n- Background: \`${bg}\`\n- Cards / surfaces: \`${card}\`\n- Primary accent: \`${accent}\` — use sparingly (CTAs, active states, key data)${secLine}\n- Text: \`${text}\`\n`;
     }
     case "mood": {
       if (!moodDimensions) return "";
       const preset = MOOD_PRESETS.find((x) => x.id === moodPreset);
       let s = `## Mood & Feel\n`;
-      if (preset && !moodCustom) s += `${preset.name} preset — ${preset.desc}.\n`;
+      if (preset && !moodCustom) s += `${preset.name} — ${preset.promptText}\n`;
       s += `- Density: ${MOOD_PROMPT_MAP.density[moodDimensions.density]}\n`;
       s += `- Typography: ${MOOD_PROMPT_MAP.typography[moodDimensions.typography]}\n`;
       s += `- Interaction: ${MOOD_PROMPT_MAP.interaction[moodDimensions.interaction]}\n`;
@@ -42,6 +63,10 @@ export function generateCategorySnippet(config, categoryId) {
     }
     case "cards": {
       if (!cardStyle) return "";
+      // Presentation / One Pager: multi-select mode
+      if (outputType === "presentation" || outputType === "one-pager") {
+        return _generateModeCards(outputType, cardStyle);
+      }
       const style = CARD_STYLES.find((s) => s.id === cardStyle.styleId);
       if (!style) return "";
       let s = `## Card Style — ${style.label}\n${style.basePrompt}\n`;
@@ -54,9 +79,28 @@ export function generateCategorySnippet(config, categoryId) {
       }
       return s;
     }
-    case "data":
-      return "";
+    case "data": {
+      if (!dataStyle) return "";
+      if (outputType === "presentation" || outputType === "one-pager") {
+        return _generateModeData(outputType, dataStyle);
+      }
+      const ds = DATA_STYLES.find((s) => s.id === dataStyle.styleId);
+      if (!ds) return "";
+      let s = `## Data Display — ${ds.label}\n${ds.basePrompt}\n`;
+      const ft = dataStyle.fineTune || {};
+      for (const dimId of ds.dims) {
+        const optId = ft[dimId];
+        if (optId && DATA_PROMPT_MAP[dimId]?.[optId]) {
+          s += `- ${DATA_FINE_TUNE_DIMS[dimId].label}: ${DATA_PROMPT_MAP[dimId][optId]}\n`;
+        }
+      }
+      return s;
+    }
     case "navigation": {
+      // Presentation / One Pager: multi-select
+      if ((outputType === "presentation" || outputType === "one-pager") && navSelections?.length > 0) {
+        return _generateModeNav(outputType, navSelections);
+      }
       if (!navStyle) return "";
       const np = NAV_PATTERNS.find((n) => n.id === navStyle.patternId);
       if (!np) return "";
@@ -86,30 +130,94 @@ export function generateCategorySnippet(config, categoryId) {
     }
     case "animation": {
       if (!animation) return "";
+      if (outputType === "presentation") {
+        return _generateModeAnimation(animation);
+      }
       if (animation === "none") return `## Animation\nKeep the UI completely static — render all elements immediately.\n`;
       if (animation === "subtle") return `## Animation\nKeep motion minimal: soft opacity transitions (200-300ms ease) and gentle hover state changes. Elements appear instantly, only state changes animate.\n`;
       if (animation === "smooth") return `## Animation\nAdd polished transitions: fade-in on mount, slide-in for new content, smooth hover states. Use CSS transitions or Framer Motion. Keep durations under 400ms.\n`;
       if (animation === "dynamic") return `## Animation\nGo bold with motion: staggered entrance animations, hover scale effects, scroll-triggered reveals, and smooth page transitions. Use Framer Motion. Make the UI feel alive.\n`;
       return "";
     }
-    case "appDescription": {
-      if (!appDescription || !appDescription.trim()) return "";
-      let s = "";
-      if (appName) s += `"${appName}" — `;
-      s += `${appDescription}\n`;
-      return s;
-    }
-    case "awsGuidelines": {
-      if (!awsGuidelines) return "";
-      return `## AWS Branding\n- ${AWS_GUIDELINES.colors}\n- ${AWS_GUIDELINES.font}\n- ${AWS_GUIDELINES.spacing}\n- ${AWS_GUIDELINES.components}\n- ${AWS_GUIDELINES.patterns}\n- ${AWS_GUIDELINES.icons}\n`;
-    }
-    case "customNotes": {
-      if (!customNotes || !customNotes.trim()) return "";
-      return `## Notes\n${customNotes}\n`;
-    }
     default:
       return "";
   }
+}
+
+// ── Technical block for Presentation / One Pager ──
+function _generateTechnicalBlock(config) {
+  const { outputType, buildMode } = config;
+  let s = `## Technical Requirements\n`;
+
+  if (outputType === "presentation") {
+    s += `- Format: Single self-contained HTML file — all CSS, JS, and Google Font imports inline. No external dependencies.\n`;
+    s += `- Viewport: Full viewport slides — 100vw x 100vh.\n`;
+    s += `- Output: Return only raw HTML starting with <!DOCTYPE html>. No explanation, no markdown.\n`;
+    s += `- Print: Include @media print styles so the deck works when saved as PDF.\n`;
+    if (buildMode === "new-build") {
+      s += `- Content: I will provide content after this prompt. Turn it into a complete deck — one idea per slide, 5-10 slides depending on content.\n`;
+    } else {
+      s += `- Content: I will provide my existing content after this prompt. Redesign it — do not change the substance.\n`;
+    }
+  } else if (outputType === "one-pager") {
+    s += `- Format: Single self-contained HTML file — all CSS and JS inline. No external dependencies.\n`;
+    s += `- Viewport: Single scrollable page — not slides. Condensed and scannable at screen width.\n`;
+    s += `- Output: Return only raw HTML starting with <!DOCTYPE html>. No explanation, no markdown.\n`;
+    s += `- Print: Include @media print styles so it works when saved as PDF.\n`;
+    s += `- Density: Condensed. If content is short, keep it tight — do not pad or stretch. Every element should earn its space.\n`;
+    if (buildMode === "new-build") {
+      s += `- Content: I will provide content after this prompt. Turn it into a polished one-pager.\n`;
+    } else {
+      s += `- Content: I will provide my existing content after this prompt.\n`;
+    }
+  }
+
+  return s;
+}
+
+function _generateModeCards(outputType, cardStyle) {
+  const ids = cardStyle.styleId?.split(",").filter(Boolean) || [];
+  if (ids.length === 0) return "";
+  const promptMap = outputType === "presentation" ? PRESENTATION_CARD_PROMPT_MAP : ONE_PAGER_CARD_PROMPT_MAP;
+  const heading = outputType === "presentation" ? "Slide Types" : "Content Blocks";
+  let s = `## ${heading}\n`;
+  for (const id of ids) {
+    if (promptMap[id]) s += `${promptMap[id]}\n`;
+  }
+  return s;
+}
+
+function _generateModeData(outputType, dataStyle) {
+  const ids = dataStyle.styleId?.split(",").filter(Boolean) || [];
+  if (ids.length === 0) return "";
+  const promptMap = outputType === "presentation" ? PRESENTATION_DATA_PROMPT_MAP : ONE_PAGER_DATA_PROMPT_MAP;
+  const heading = outputType === "presentation" ? "Data Visualizations" : "Data Elements";
+  let s = `## ${heading}\n`;
+  for (const id of ids) {
+    if (promptMap[id]) s += `${promptMap[id]}\n`;
+  }
+  return s;
+}
+
+function _generateModeNav(outputType, navSelections) {
+  if (!navSelections || navSelections.length === 0) return "";
+  const promptMap = outputType === "presentation" ? PRESENTATION_NAV_PROMPT_MAP : ONE_PAGER_NAV_PROMPT_MAP;
+  let s = `## Navigation\n`;
+  for (const id of navSelections) {
+    if (promptMap[id]) s += `- ${promptMap[id]}\n`;
+  }
+  return s;
+}
+
+function _generateModeAnimation(animation) {
+  if (!animation) return "";
+  const ids = animation.split(",").filter(Boolean);
+  if (ids.length === 0) return "";
+  let s = `## Animation\n`;
+  for (const id of ids) {
+    if (PRESENTATION_ANIMATION_PROMPT_MAP[id]) s += `${PRESENTATION_ANIMATION_PROMPT_MAP[id]}\n`;
+  }
+  return s;
 }
 
 export function generatePrompt(config) {
@@ -118,62 +226,91 @@ export function generatePrompt(config) {
     selectedPurpose,
     theme,
     customAccents,
+    customColors,
     modeFilter,
     moodPreset,
     moodDimensions,
     moodCustom,
     cardStyle,
+    dataStyle,
     navStyle,
+    navSelections,
     buttonStyle,
     animation,
-    customNotes,
-    appName,
-    appDescription,
-    awsGuidelines,
+    faviconDesc,
+    outputType,
+    outputPurpose,
+    buildMode,
+    appStarterEnabled,
   } = config;
 
   // Helper: check if a section is included in the prompt
   const included = (id) => configuredSections.length === 0 || configuredSections.includes(id);
 
-  // ── Opener: short role + what to build ──
-  let p = `Design this as a senior frontend engineer would`;
-  if (appName && included("appDescription")) p += ` — build "${appName}"`;
-  p += `. Write clean, production-ready React code with real attention to visual detail.\n\n`;
+  let p = "";
 
-  // App description (inline, not labeled)
-  if (appDescription && appDescription.trim() && included("appDescription")) {
-    p += `${appDescription}\n\n`;
+  // ── Opener ──
+  if (outputType === "app" || !outputType) {
+    if (appStarterEnabled) {
+      p += `I would like to make [idea]. Build this as a Vite, React, JavaScript, and Framer Motion app. As a principal engineer, create feature component folders with constant files and sub-components, a store folder for Zustand, and a services folder for API calls. Keep code clean and components relatively small. Create the basic app structure and one feature folder to start. Fill out the README with a feature list and future directory structure. Ask all your questions in a single list before starting — once I respond, proceed without further interruption.\n\n`;
+    } else {
+      p += `Design this as a senior frontend engineer would. Write clean, production-ready React code with real attention to visual detail.\n\n`;
+    }
+
+    // Legacy project type
+    if (!outputType && selectedPurpose && included("appType")) {
+      const pt = PROJECT_TYPES.find((x) => x.id === selectedPurpose);
+      if (pt) {
+        p += `## Project Type — ${pt.name}\n`;
+        p += `${pt.promptContext}\n\n`;
+      }
+    }
+  } else if (outputType === "presentation") {
+    if (buildMode === "new-build") {
+      p += `Create a single self-contained HTML file that presents the content I provide as a slide deck. Design it as a senior frontend engineer would — polished, production-quality, with real attention to visual detail.\n\n`;
+    } else {
+      p += `I have an existing presentation. Keep my content but apply the following design direction — update the look, feel, and structure. Design it as a senior frontend engineer would.\n\n`;
+    }
+    p += _generateTechnicalBlock(config);
+    p += `\n`;
+  } else if (outputType === "one-pager") {
+    if (buildMode === "new-build") {
+      p += `Create a single self-contained HTML file as a polished one-page document. Design it as a senior frontend engineer would — clean, professional, with real attention to visual detail.\n\n`;
+    } else {
+      p += `I have existing content. Redesign the layout and apply the following design direction. Keep content intact. Design it as a senior frontend engineer would.\n\n`;
+    }
+    p += _generateTechnicalBlock(config);
+    p += `\n`;
   }
 
-  // ── App Purpose — inline the directive, not a labeled section ──
-  if (selectedPurpose && included("appType")) {
-    const desc = PURPOSE_PROMPT_DESC[selectedPurpose];
-    p += `${desc}\n\n`;
-  }
-
-  // ── Color Palette — exact values, not narrative ──
+  // ── Color Palette ──
   if (included("theme")) {
     const mode = modeFilter || "dark";
     if (theme) {
       const t = THEMES.find((x) => x.id === theme);
+      const co = customColors?.[theme] || {};
       const effectiveAccent = customAccents?.[theme] || t?.preview.accent;
+      const eBg = co.bg || t?.preview.bg;
+      const eCard = co.card || t?.preview.card;
+      const eText = co.text || t?.preview.text;
+      const eSec = co.secondary || t?.preview.secondary;
       p += `## Color Palette\n`;
       p += `${t?.name} theme (${mode} mode) — ${t?.desc}.\n`;
-      p += `- Background: \`${t?.preview.bg}\`\n`;
-      p += `- Cards / surfaces: \`${t?.preview.card}\`\n`;
+      p += `- Background: \`${eBg}\`\n`;
+      p += `- Cards / surfaces: \`${eCard}\`\n`;
       p += `- Primary accent: \`${effectiveAccent}\` — use sparingly (CTAs, active states, key data)\n`;
-      if (t?.preview.secondary) p += `- Secondary accent: \`${t.preview.secondary}\` — supporting color for charts, badges, subtle highlights\n`;
-      p += `- Text: \`${t?.preview.text}\`\n\n`;
+      if (eSec) p += `- Secondary accent: \`${eSec}\` — supporting color for charts, badges, subtle highlights\n`;
+      p += `- Text: \`${eText}\`\n\n`;
     } else if (configuredSections.includes("theme")) {
       p += `Use ${mode} mode.\n\n`;
     }
   }
 
-  // ── Mood & Feel — 4-dimension system ──
+  // ── Mood & Feel ──
   if (moodDimensions && included("mood")) {
     const preset = MOOD_PRESETS.find((x) => x.id === moodPreset);
     p += `## Mood & Feel\n`;
-    if (preset && !moodCustom) p += `${preset.name} preset — ${preset.desc}.\n`;
+    if (preset && !moodCustom) p += `${preset.name} — ${preset.promptText}\n`;
     p += `- Density: ${MOOD_PROMPT_MAP.density[moodDimensions.density]}\n`;
     p += `- Typography: ${MOOD_PROMPT_MAP.typography[moodDimensions.typography]}\n`;
     p += `- Interaction: ${MOOD_PROMPT_MAP.interaction[moodDimensions.interaction]}\n`;
@@ -181,41 +318,72 @@ export function generatePrompt(config) {
     p += `\n`;
   }
 
-  // ── Card Style ──
+  // ── Cards / Slide Types / Content Blocks ──
   if (cardStyle && included("cards")) {
-    const style = CARD_STYLES.find((cs) => cs.id === cardStyle.styleId);
-    if (style) {
-      p += `## Card Style — ${style.label}\n`;
-      p += `${style.basePrompt}\n`;
-      const ft = cardStyle.fineTune || {};
-      for (const dimId of style.dims) {
-        const optId = ft[dimId];
-        if (optId && CARD_PROMPT_MAP[dimId]?.[optId]) {
-          p += `- ${CARD_FINE_TUNE_DIMS[dimId].label}: ${CARD_PROMPT_MAP[dimId][optId]}\n`;
+    if (outputType === "presentation" || outputType === "one-pager") {
+      const snippet = _generateModeCards(outputType, cardStyle);
+      if (snippet) p += snippet + `\n`;
+    } else {
+      const style = CARD_STYLES.find((cs) => cs.id === cardStyle.styleId);
+      if (style) {
+        p += `## Card Style — ${style.label}\n`;
+        p += `${style.basePrompt}\n`;
+        const ft = cardStyle.fineTune || {};
+        for (const dimId of style.dims) {
+          const optId = ft[dimId];
+          if (optId && CARD_PROMPT_MAP[dimId]?.[optId]) {
+            p += `- ${CARD_FINE_TUNE_DIMS[dimId].label}: ${CARD_PROMPT_MAP[dimId][optId]}\n`;
+          }
         }
+        p += `\n`;
       }
-      p += `\n`;
+    }
+  }
+
+  // ── Data Display ──
+  if (dataStyle && included("data")) {
+    if (outputType === "presentation" || outputType === "one-pager") {
+      const snippet = _generateModeData(outputType, dataStyle);
+      if (snippet) p += snippet + `\n`;
+    } else {
+      const ds = DATA_STYLES.find((d) => d.id === dataStyle.styleId);
+      if (ds) {
+        p += `## Data Display — ${ds.label}\n`;
+        p += `${ds.basePrompt}\n`;
+        const ft = dataStyle.fineTune || {};
+        for (const dimId of ds.dims) {
+          const optId = ft[dimId];
+          if (optId && DATA_PROMPT_MAP[dimId]?.[optId]) {
+            p += `- ${DATA_FINE_TUNE_DIMS[dimId].label}: ${DATA_PROMPT_MAP[dimId][optId]}\n`;
+          }
+        }
+        p += `\n`;
+      }
     }
   }
 
   // ── Navigation ──
-  if (navStyle && included("navigation")) {
-    const np = NAV_PATTERNS.find((n) => n.id === navStyle.patternId);
-    if (np) {
-      p += `## Navigation — ${np.label}\n`;
-      p += `${np.basePrompt}\n`;
-      const ft = navStyle.fineTune || {};
-      for (const dimId of np.dims) {
-        const optId = ft[dimId];
-        if (optId && NAV_PROMPT_MAP[dimId]?.[optId]) {
-          p += `- ${NAV_FINE_TUNE_DIMS[dimId].label}: ${NAV_PROMPT_MAP[dimId][optId]}\n`;
+  if (included("navigation")) {
+    if ((outputType === "presentation" || outputType === "one-pager") && navSelections?.length > 0) {
+      p += _generateModeNav(outputType, navSelections) + `\n`;
+    } else if (navStyle) {
+      const np = NAV_PATTERNS.find((n) => n.id === navStyle.patternId);
+      if (np) {
+        p += `## Navigation — ${np.label}\n`;
+        p += `${np.basePrompt}\n`;
+        const ft = navStyle.fineTune || {};
+        for (const dimId of np.dims) {
+          const optId = ft[dimId];
+          if (optId && NAV_PROMPT_MAP[dimId]?.[optId]) {
+            p += `- ${NAV_FINE_TUNE_DIMS[dimId].label}: ${NAV_PROMPT_MAP[dimId][optId]}\n`;
+          }
         }
+        p += `\n`;
       }
-      p += `\n`;
     }
   }
 
-  // ── Buttons ──
+  // ── Buttons (App only) ──
   if (buttonStyle && included("buttons")) {
     const bs = BTN_STYLES.find((b) => b.id === buttonStyle.styleId);
     if (bs) {
@@ -232,47 +400,45 @@ export function generatePrompt(config) {
     }
   }
 
-  // ── Animation — specific implementation guidance ──
+  // ── Animation ──
   if (animation && included("animation")) {
-    p += `## Animation\n`;
-    if (animation === "none") {
-      p += `Keep the UI completely static — render all elements immediately.\n`;
-    } else if (animation === "subtle") {
-      p += `Keep motion minimal: soft opacity transitions (200-300ms ease) and gentle hover state changes. Elements appear instantly, only state changes animate.\n`;
-    } else if (animation === "smooth") {
-      p += `Add polished transitions: fade-in on mount, slide-in for new content, smooth hover states. Use CSS transitions or Framer Motion. Keep durations under 400ms.\n`;
-    } else if (animation === "dynamic") {
-      p += `Go bold with motion: staggered entrance animations, hover scale effects, scroll-triggered reveals, and smooth page transitions. Use Framer Motion. Make the UI feel alive.\n`;
+    if (outputType === "presentation") {
+      p += _generateModeAnimation(animation) + `\n`;
+    } else {
+      p += `## Animation\n`;
+      if (animation === "none") {
+        p += `Keep the UI completely static — render all elements immediately.\n`;
+      } else if (animation === "subtle") {
+        p += `Keep motion minimal: soft opacity transitions (200-300ms ease) and gentle hover state changes. Elements appear instantly, only state changes animate.\n`;
+      } else if (animation === "smooth") {
+        p += `Add polished transitions: fade-in on mount, slide-in for new content, smooth hover states. Use CSS transitions or Framer Motion. Keep durations under 400ms.\n`;
+      } else if (animation === "dynamic") {
+        p += `Go bold with motion: staggered entrance animations, hover scale effects, scroll-triggered reveals, and smooth page transitions. Use Framer Motion. Make the UI feel alive.\n`;
+      }
+      p += `\n`;
     }
-    p += `\n`;
   }
 
-  // ── AWS Guidelines ──
-  if (awsGuidelines && included("awsGuidelines")) {
-    p += `## AWS Branding\n`;
-    p += `- ${AWS_GUIDELINES.colors}\n`;
-    p += `- ${AWS_GUIDELINES.font}\n`;
-    p += `- ${AWS_GUIDELINES.spacing}\n`;
-    p += `- ${AWS_GUIDELINES.components}\n`;
-    p += `- ${AWS_GUIDELINES.patterns}\n`;
-    p += `- ${AWS_GUIDELINES.icons}\n\n`;
-  }
-
-  // ── Style Rules — concrete, actionable (replaces "Design Principles") ──
+  // ── Style Rules ──
   p += `## Style Rules\n`;
-  p += `- Icons: use Lucide React exclusively\n`;
-  p += `- Cards: use \`backdrop-filter: blur(12px)\` with semi-transparent backgrounds for depth\n`;
-  p += `- Spacing: 16-24px padding inside cards, 12-16px gaps between elements\n`;
-  p += `- Hierarchy: clear font-size contrast — headings 28-36px, body 14-16px, captions 11-12px\n`;
-  p += `- Accent color only on: primary buttons, active nav, key metrics, links\n`;
-  if (!awsGuidelines || !included("awsGuidelines")) {
+  p += `- No emojis — use icons instead (Lucide React for apps, inline SVG for HTML)\n`;
+  if (!outputType || outputType === "app") {
+    p += `- Icons: use Lucide React exclusively\n`;
+    p += `- Cards: use \`backdrop-filter: blur(12px)\` with semi-transparent backgrounds for depth\n`;
+    p += `- Spacing: 16-24px padding inside cards, 12-16px gaps between elements\n`;
+    p += `- Hierarchy: clear font-size contrast — headings 28-36px, body 14-16px, captions 11-12px\n`;
+    p += `- Accent color only on: primary buttons, active nav, key metrics, links\n`;
     p += `- Font: choose a distinctive typeface like Geist, DM Sans, or Plus Jakarta Sans\n`;
+    if (faviconDesc) {
+      p += `- Favicon / App Icon: ${faviconDesc}\n`;
+    }
+  } else {
+    p += `- Typography: use a clean, professional typeface via Google Fonts\n`;
+    p += `- Hierarchy: clear font-size contrast between headings, body, and captions\n`;
+    p += `- Accent color only on: key headings, callouts, data highlights\n`;
   }
 
-  // ── Custom notes ──
-  if (customNotes && customNotes.trim() && included("customNotes")) {
-    p += `\n## Notes\n${customNotes}\n`;
-  }
+  p += `\n<!-- crafted by pintuck -->\n`;
 
   return p;
 }

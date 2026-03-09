@@ -1,4 +1,4 @@
-export default function PreviewData({ p, mood, cardCSS, buttonCSS }) {
+export default function PreviewData({ p, mood, cardCSS, buttonCSS, dataCSS }) {
   const m = mood || {};
   const pad = Math.round((m.padScale || 1) * 10);
   const gap = Math.round((m.gapScale || 1) * 6);
@@ -16,6 +16,7 @@ export default function PreviewData({ p, mood, cardCSS, buttonCSS }) {
   const bs = buttonCSS || {};
   const btnP = bs.primary || {};
   const btnS = bs.secondary || {};
+  const ds = dataCSS || {};
 
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: pad, gap: gap, background: p.bg, fontFamily: bFont }}>
@@ -23,6 +24,7 @@ export default function PreviewData({ p, mood, cardCSS, buttonCSS }) {
         <div style={{ fontSize: fs(15), fontWeight: hWt, fontFamily: hFont, color: p.text }}>Analytics</div>
         <div style={{ display: "flex", gap: 4, alignItems: "center" }}>
           <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Filter</div>
+          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Share</div>
           <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>Export</div>
         </div>
       </div>
@@ -30,7 +32,7 @@ export default function PreviewData({ p, mood, cardCSS, buttonCSS }) {
         {[{ l: "Revenue", v: "$2.4M", c: "+12.4%" }, { l: "Users", v: "18.2K", c: "+8.1%" }, { l: "Sessions", v: "142K", c: "+3.7%" }, { l: "Bounce", v: "24%", c: "-2.1%" }].map((s) => (
           <div key={s.l} style={{ borderRadius: cRad, padding: 8, background: p.card, border: `1px solid ${p.border}`, boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>
             <div style={{ fontSize: fs(7), fontWeight: 600, textTransform: "uppercase", letterSpacing: ".04em", color: p.dim, marginBottom: 3 }}>{s.l}</div>
-            <div style={{ fontSize: fs(14), fontWeight: 700, color: p.text, fontFamily: "'JetBrains Mono',monospace" }}>{s.v}</div>
+            <div style={{ fontSize: fs(14), fontWeight: 700, color: p.text, ...(ds.number || { fontFamily: "'JetBrains Mono',monospace" }) }}>{s.v}</div>
             <div style={{ fontSize: fs(8), fontWeight: 600, color: s.c.startsWith("+") ? p.green : p.red, marginTop: 2 }}>{s.c}</div>
           </div>
         ))}
@@ -53,17 +55,17 @@ export default function PreviewData({ p, mood, cardCSS, buttonCSS }) {
         </div>
       </div>
       <div style={{ borderRadius: cRad, background: p.card, border: `1px solid ${p.border}`, overflow: "hidden", boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>
-        <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr .8fr", padding: "6px 10px", borderBottom: `1px solid ${p.border}`, background: p.surface }}>
+        <div style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr .8fr", padding: ds.rowPad || "6px 10px", borderBottom: `1px solid ${p.border}`, background: p.surface, ...(ds.header || {}) }}>
           {["Page", "Views", "Bounce", "Time", ""].map((h) => (
-            <div key={h || "x"} style={{ fontSize: fs(7), fontWeight: 700, textTransform: "uppercase", letterSpacing: ".04em", color: p.dim }}>{h}</div>
+            <div key={h || "x"} style={{ fontSize: fs(7), fontWeight: ds.header?.fontWeight || 700, textTransform: ds.header?.textTransform || "uppercase", letterSpacing: ds.header?.letterSpacing || ".04em", color: ds.header?.color || p.dim }}>{h}</div>
           ))}
         </div>
         {[{ pg: "/dashboard", v: "12.4K", b: "18%", t: "4:32" }, { pg: "/pricing", v: "8.2K", b: "32%", t: "2:15" }, { pg: "/docs", v: "6.8K", b: "12%", t: "6:41" }].map((r, i) => (
-          <div key={r.pg} style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr .8fr", padding: "5px 10px", borderBottom: i < 2 ? `1px solid ${p.borderLight}` : "none", alignItems: "center" }}>
+          <div key={r.pg} style={{ display: "grid", gridTemplateColumns: "2.5fr 1fr 1fr 1fr .8fr", padding: ds.rowPad || "5px 10px", borderBottom: i < 2 ? (ds.divider || `1px solid ${p.borderLight}`) : "none", alignItems: "center", background: ds.zebraStripe && i % 2 === 1 ? ds.zebraBg : "transparent" }}>
             <div style={{ fontSize: fs(9), color: p.text, fontWeight: 500 }}>{r.pg}</div>
-            <div style={{ fontSize: fs(9), color: p.muted, fontFamily: "'JetBrains Mono',monospace" }}>{r.v}</div>
-            <div style={{ fontSize: fs(9), color: p.muted, fontFamily: "'JetBrains Mono',monospace" }}>{r.b}</div>
-            <div style={{ fontSize: fs(9), color: p.muted, fontFamily: "'JetBrains Mono',monospace" }}>{r.t}</div>
+            <div style={{ fontSize: fs(9), ...(ds.number || { color: p.muted, fontFamily: "'JetBrains Mono',monospace" }) }}>{r.v}</div>
+            <div style={{ fontSize: fs(9), ...(ds.number || { color: p.muted, fontFamily: "'JetBrains Mono',monospace" }) }}>{r.b}</div>
+            <div style={{ fontSize: fs(9), ...(ds.number || { color: p.muted, fontFamily: "'JetBrains Mono',monospace" }) }}>{r.t}</div>
             <div style={{ width: 18, height: 8, borderRadius: 4, background: p.greenBg, border: `1px solid ${p.green}30` }} />
           </div>
         ))}

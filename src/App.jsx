@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import usePromptStore from "./store/usePromptStore";
 import { getShellColors } from "./utils/shellColors";
+import { CATEGORIES } from "./constants/categories";
 import TitleBar from "./components/layout/TitleBar";
 import NavStrip from "./components/layout/NavStrip";
 import MainPanel from "./components/layout/MainPanel";
@@ -8,18 +10,47 @@ import TerminalPrompt from "./components/layout/TerminalPrompt";
 import SummaryOverlay from "./components/layout/SummaryOverlay";
 import WelcomeScreen from "./components/layout/WelcomeScreen";
 import IntroPage from "./components/layout/IntroPage";
+import AdminPortal from "./components/AdminPortal/AdminPortal";
 
 export default function App() {
   const shellMode = usePromptStore((s) => s.shellMode);
   const onboarded = usePromptStore((s) => s.onboarded);
   const showIntro = usePromptStore((s) => s.showIntro);
   const dismissIntro = usePromptStore((s) => s.dismissIntro);
+  const activeCategory = usePromptStore((s) => s.activeCategory);
+  const adminMode = usePromptStore((s) => s.adminMode);
   const isLight = shellMode === "light";
   const c = getShellColors(isLight);
+
+  // Sync URL hash ↔ active category
+  useEffect(() => {
+    const hash = window.location.hash.replace("#", "");
+
+    const valid = CATEGORIES.some((c) => c.id === hash);
+    if (valid && hash !== activeCategory) {
+      usePromptStore.setState({ activeCategory: hash });
+    } else if (onboarded && !hash) {
+      window.location.hash = activeCategory;
+    }
+
+    const onHashChange = () => {
+      const h = window.location.hash.replace("#", "");
+      if (CATEGORIES.some((c) => c.id === h)) {
+        usePromptStore.setState({ activeCategory: h });
+      }
+    };
+    window.addEventListener("hashchange", onHashChange);
+    return () => window.removeEventListener("hashchange", onHashChange);
+  }, []);
 
   // Show intro landing page first
   if (showIntro) {
     return <IntroPage onStart={dismissIntro} />;
+  }
+
+  // Admin portal
+  if (adminMode) {
+    return <AdminPortal />;
   }
 
   return (

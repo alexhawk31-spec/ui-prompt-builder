@@ -1,100 +1,99 @@
-export default function ThumbRibbon({ accent }) {
+export default function ThumbRibbon({ accent, label, desc }) {
+  const font = "'DM Sans', sans-serif";
+  const muted = "rgba(255,255,255,0.4)";
+  const links = ["Overview", "Features", "Pricing", "FAQ"];
+
   return (
     <div
       style={{
         height: "100%",
         background: "#0d1018",
-        padding: 4,
         display: "flex",
         flexDirection: "column",
-        gap: 3,
+        alignItems: "center",
         borderRadius: 4,
         overflow: "hidden",
+        fontFamily: font,
+        padding: "6px 6px",
+        gap: 5,
       }}
     >
-      {/* Horizontal top bar */}
+      {/* Content above */}
       <div
         style={{
-          height: 10,
-          flexShrink: 0,
-          display: "flex",
-          alignItems: "center",
-          gap: 4,
-          padding: "0 4px",
-          background: "rgba(255,255,255,0.05)",
-          borderRadius: 2,
-        }}
-      >
-        {/* Logo square */}
-        <div
-          style={{
-            width: 6,
-            height: 6,
-            borderRadius: 1,
-            background: accent,
-            flexShrink: 0,
-            opacity: 0.8,
-          }}
-        />
-        {/* Nav link dots */}
-        {[0, 1, 2, 3].map((i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              gap: 1,
-            }}
-          >
-            <div
-              style={{
-                width: i === 1 ? 12 : 10,
-                height: 2,
-                borderRadius: 1,
-                background:
-                  i === 1
-                    ? "rgba(255,255,255,0.35)"
-                    : "rgba(255,255,255,0.13)",
-              }}
-            />
-            {i === 1 && (
-              <div
-                style={{
-                  width: 12,
-                  height: 1,
-                  borderRadius: 1,
-                  background: accent,
-                }}
-              />
-            )}
-          </div>
-        ))}
-      </div>
-
-      {/* Content area */}
-      <div
-        style={{
-          flex: 1,
+          width: "100%",
           display: "flex",
           flexDirection: "column",
           gap: 3,
-          padding: "0 2px",
         }}
       >
         <div
           style={{
             height: 3,
-            width: "55%",
-            background: "rgba(255,255,255,0.16)",
+            width: "50%",
+            background: "rgba(255,255,255,0.12)",
             borderRadius: 1,
           }}
         />
         <div
           style={{
             height: 2,
-            width: "85%",
-            background: "rgba(255,255,255,0.08)",
+            width: "80%",
+            background: "rgba(255,255,255,0.06)",
+            borderRadius: 1,
+          }}
+        />
+      </div>
+
+      {/* Centered pill-shaped ribbon */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 2,
+          background: "rgba(255,255,255,0.06)",
+          borderRadius: 999,
+          padding: "3px 5px",
+          flexShrink: 0,
+        }}
+      >
+        {links.map((link, i) => {
+          const active = i === 1;
+          return (
+            <span
+              key={link}
+              style={{
+                fontSize: 7,
+                padding: "2px 4px",
+                borderRadius: 999,
+                background: active ? accent : "transparent",
+                color: active ? "#0d1018" : muted,
+                whiteSpace: "nowrap",
+                lineHeight: 1,
+                fontWeight: active ? 600 : 400,
+              }}
+            >
+              {link}
+            </span>
+          );
+        })}
+      </div>
+
+      {/* Content below */}
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "column",
+          gap: 3,
+          flex: 1,
+        }}
+      >
+        <div
+          style={{
+            height: 2,
+            width: "90%",
+            background: "rgba(255,255,255,0.07)",
             borderRadius: 1,
           }}
         />
@@ -102,7 +101,7 @@ export default function ThumbRibbon({ accent }) {
           style={{
             height: 2,
             width: "65%",
-            background: "rgba(255,255,255,0.06)",
+            background: "rgba(255,255,255,0.05)",
             borderRadius: 1,
           }}
         />

@@ -1,14 +1,16 @@
 import { THEMES, ANIMATIONS } from "../constants";
-import { PURPOSES, PURPOSE_PROMPT_DESC } from "../components/PurposeSelector/constants";
+import { PROJECT_TYPES } from "../components/ProjectPicker/constants";
 import { MOOD_PRESETS } from "../components/MoodSelector/constants";
 import { CARD_STYLES } from "../components/ComponentStyleSelector/constants";
 import { NAV_PATTERNS } from "../components/NavigationSelector/constants";
 import { BTN_STYLES } from "../components/ButtonSelector/constants";
+import { DATA_STYLES } from "../components/DataDisplaySelector/constants";
+import { OUTPUT_TYPES, PURPOSE_OPTIONS } from "../constants/outputTypes";
 
 export function isCategoryConfigured(state, categoryId) {
   switch (categoryId) {
     case "appType":
-      return !!state.selectedPurpose;
+      return !!state.outputType || !!state.selectedPurpose;
     case "theme":
       return state.theme !== null || state.configuredSections?.includes("theme");
     case "mood":
@@ -16,19 +18,19 @@ export function isCategoryConfigured(state, categoryId) {
     case "cards":
       return state.cardStyle !== null;
     case "data":
-      return false;
+      return state.dataStyle !== null;
     case "navigation":
+      // Multi-select mode for presentation/one-pager
+      if (state.outputType === "presentation" || state.outputType === "one-pager") {
+        return state.navSelections?.length > 0;
+      }
       return state.navStyle !== null;
     case "buttons":
       return state.buttonStyle !== null;
     case "animation":
       return state.animation !== null;
-    case "appDescription":
-      return state.appDescription.trim() !== "";
-    case "awsGuidelines":
-      return state.awsGuidelines === true;
-    case "customNotes":
-      return state.customNotes.trim() !== "";
+    case "templates":
+      return false;
     case "prompt":
       return state.configuredSections?.length > 0;
     default:
@@ -39,11 +41,19 @@ export function isCategoryConfigured(state, categoryId) {
 export function getSelectionSummary(state, categoryId) {
   switch (categoryId) {
     case "appType": {
+      // New output type system
+      if (state.outputType) {
+        const type = OUTPUT_TYPES.find((t) => t.id === state.outputType);
+        const purposes = PURPOSE_OPTIONS[state.outputType];
+        const purpose = purposes?.find((p) => p.id === state.outputPurpose);
+        const text = purpose ? `${type?.label} · ${purpose.label}` : type?.label;
+        return { text };
+      }
+      // Legacy
       if (!state.selectedPurpose) return null;
-      const purpose = PURPOSES.find((x) => x.id === state.selectedPurpose);
-      if (!purpose) return null;
-      const desc = PURPOSE_PROMPT_DESC[state.selectedPurpose];
-      return { text: purpose.name, detail: desc || purpose.desc };
+      const project = PROJECT_TYPES.find((x) => x.id === state.selectedPurpose);
+      if (!project) return null;
+      return { text: project.name, detail: project.tagline };
     }
     case "theme": {
       const t = THEMES.find((x) => x.id === state.theme);
@@ -53,10 +63,12 @@ export function getSelectionSummary(state, categoryId) {
           ? { text: `${mode.charAt(0).toUpperCase() + mode.slice(1)} mode` }
           : null;
       }
+      const co = state.customColors?.[state.theme] || {};
       const accent = state.customAccents?.[state.theme] || t.preview.accent;
-      const colors = [t.preview.bg, t.preview.card, accent];
-      if (t.preview.secondary) colors.push(t.preview.secondary);
-      colors.push(t.preview.text);
+      const colors = [co.bg || t.preview.bg, co.card || t.preview.card, accent];
+      const sec = co.secondary || t.preview.secondary;
+      if (sec) colors.push(sec);
+      colors.push(co.text || t.preview.text);
       return { text: t.name, colors };
     }
     case "mood": {
@@ -67,13 +79,30 @@ export function getSelectionSummary(state, categoryId) {
     }
     case "cards": {
       if (!state.cardStyle) return null;
+      // Multi-select mode
+      if (state.outputType === "presentation" || state.outputType === "one-pager") {
+        const count = state.cardStyle.styleId?.split(",").filter(Boolean).length || 0;
+        return { text: `${count} selected` };
+      }
       const style = CARD_STYLES.find((s) => s.id === state.cardStyle.styleId);
       if (!style) return null;
       return { text: state.cardStyle.custom ? `${style.label} (custom)` : style.label };
     }
-    case "data":
-      return null;
+    case "data": {
+      if (!state.dataStyle) return null;
+      if (state.outputType === "presentation" || state.outputType === "one-pager") {
+        const count = state.dataStyle.styleId?.split(",").filter(Boolean).length || 0;
+        return { text: `${count} selected` };
+      }
+      const ds = DATA_STYLES.find((s) => s.id === state.dataStyle.styleId);
+      if (!ds) return null;
+      return { text: state.dataStyle.custom ? `${ds.label} (custom)` : ds.label };
+    }
     case "navigation": {
+      if (state.outputType === "presentation" || state.outputType === "one-pager") {
+        const count = state.navSelections?.length || 0;
+        return count > 0 ? { text: `${count} selected` } : null;
+      }
       if (!state.navStyle) return null;
       const np = NAV_PATTERNS.find((n) => n.id === state.navStyle.patternId);
       if (!np) return null;
@@ -86,17 +115,17 @@ export function getSelectionSummary(state, categoryId) {
       return { text: state.buttonStyle.custom ? `${bs.label} (custom)` : bs.label };
     }
     case "animation": {
+      if (!state.animation) return null;
+      // Presentation multi-select
+      if (state.outputType === "presentation" && state.animation.includes(",")) {
+        const count = state.animation.split(",").filter(Boolean).length;
+        return { text: `${count} selected` };
+      }
       const a = ANIMATIONS.find((x) => x.id === state.animation);
-      return a ? { text: a.name } : null;
+      return a ? { text: a.name } : { text: state.animation };
     }
-    case "appDescription":
-      return state.appDescription.trim()
-        ? { text: state.appName || "Described" }
-        : null;
-    case "awsGuidelines":
-      return state.awsGuidelines ? { text: "Enabled" } : null;
-    case "customNotes":
-      return state.customNotes.trim() ? { text: "Added" } : null;
+    case "templates":
+      return null;
     case "prompt": {
       const count = state.configuredSections?.length || 0;
       return count > 0 ? { text: `${count} section${count === 1 ? "" : "s"}` } : null;

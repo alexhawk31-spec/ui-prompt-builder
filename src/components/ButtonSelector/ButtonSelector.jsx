@@ -15,6 +15,10 @@ import ThumbNeon from "./thumbnails/ThumbNeon";
 import ThumbSlab from "./thumbnails/ThumbSlab";
 import ThumbCapsule from "./thumbnails/ThumbCapsule";
 import ThumbToggle from "./thumbnails/ThumbToggle";
+import ThumbFrost from "./thumbnails/ThumbFrost";
+import ThumbInk from "./thumbnails/ThumbInk";
+import ThumbBrick from "./thumbnails/ThumbBrick";
+import ThumbDuo from "./thumbnails/ThumbDuo";
 
 const THUMB_MAP = {
   stamp: ThumbStamp,
@@ -25,6 +29,10 @@ const THUMB_MAP = {
   slab: ThumbSlab,
   capsule: ThumbCapsule,
   toggle: ThumbToggle,
+  frost: ThumbFrost,
+  ink: ThumbInk,
+  brick: ThumbBrick,
+  duo: ThumbDuo,
 };
 
 function DimCard({ dim, value, onChange, expanded, onToggle }) {
@@ -167,32 +175,9 @@ export default function ButtonSelector() {
                   position: "relative",
                 }}
               >
-                {/* Thumbnail preview */}
-                <div style={{ height: 50, overflow: "hidden" }}>
-                  {Thumb && <Thumb accent={style.color} />}
-                </div>
-
-                {/* Label + tagline */}
-                <div style={{
-                  padding: "8px 8px",
-                  borderTop: `1px solid ${active ? `${SECTION_COLOR}25` : c.panelBorder}`,
-                }}>
-                  <div style={{
-                    fontSize: 10,
-                    fontWeight: 700,
-                    color: active ? c.text : c.muted,
-                    marginBottom: 2,
-                  }}>
-                    {style.label}
-                  </div>
-                  <div style={{
-                    fontSize: 8,
-                    color: c.muted,
-                    lineHeight: 1.3,
-                    opacity: active ? 0.8 : 0.5,
-                  }}>
-                    {style.tagline}
-                  </div>
+                {/* Styled preview with real content */}
+                <div style={{ height: 110, overflow: "hidden" }}>
+                  {Thumb && <Thumb accent={style.color} label={style.label} desc={style.tagline} />}
                 </div>
 
                 {/* Check badge */}

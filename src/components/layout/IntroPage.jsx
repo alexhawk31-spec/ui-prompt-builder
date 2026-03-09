@@ -435,7 +435,7 @@ export default function IntroPage({ onStart }) {
           zIndex: 1,
         }}
       >
-        built with ✂ by alex head
+        crafted by Alex Head
       </div>
     </div>
   );

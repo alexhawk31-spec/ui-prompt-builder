@@ -1,0 +1,140 @@
+[
+  {
+    "id": "void-station",
+    "name": "Void Station",
+    "description": "Deep space command center. Neon-lit cards hum against a pitch-black void, buttons glow like cockpit switches, and every pixel screams mission control.",
+    "author": "system",
+    "tags": ["dark", "saas", "dashboard", "neon"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "saas",
+      "selectedPurpose": "number-cruncher",
+      "theme": "neon-cyber",
+      "modeFilter": "dark",
+      "customAccents": {},
+      "moodPreset": "professional",
+      "moodDimensions": { "density": "compact", "typography": "technical", "interaction": "smooth", "embellishment": "minimal" },
+      "cardStyle": { "styleId": "neon", "fineTune": { "neonGlow": "lit", "neonFlicker": "steady", "neonAtmosphere": "hazy", "neonEdge": "soft-glow", "accent": "theme" }, "custom": false },
+      "navStyle": { "patternId": "rail", "fineTune": { "activeIndicator": "leftBar", "icons": "outlined", "density": "balanced", "hover": "bgTint", "interaction": "static", "accent": "theme" }, "custom": false },
+      "buttonStyle": { "styleId": "neon", "fineTune": { "size": "medium", "corners": "rounded", "labelWeight": "bold", "icon": "none", "shadow": "accentGlow", "hover": "lighten", "press": "sink", "accent": "theme" }, "custom": false },
+      "dataStyle": { "styleId": "pulse", "fineTune": { "rowDensity": "standard", "headerStyle": "subtle", "dividers": "hairline", "numberStyle": "highlighted", "charts": "sparklines", "accent": "theme" }, "custom": false },
+      "animation": "smooth",
+      "awsGuidelines": false
+    }
+  },
+  {
+    "id": "golden-hour",
+    "name": "Golden Hour",
+    "description": "That warm, sun-drenched feeling right before sunset. Floating card surfaces, earthy tones, and stamp buttons that feel like pressing a wax seal.",
+    "author": "system",
+    "tags": ["light", "ecommerce", "warm", "organic"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "ecommerce",
+      "selectedPurpose": "showroom",
+      "theme": "earth-organic",
+      "modeFilter": "light",
+      "customAccents": {},
+      "moodPreset": null,
+      "moodDimensions": { "density": "balanced", "typography": "clean", "interaction": "smooth", "embellishment": "moderate" },
+      "cardStyle": { "styleId": "float", "fineTune": { "floatAltitude": "floating", "floatSurface": "satin", "floatLanding": "placed", "floatStack": "tiered", "accent": "warm" }, "custom": false },
+      "navStyle": { "patternId": "shelf", "fineTune": { "activeIndicator": "bgFill", "icons": "outlined", "density": "balanced", "hover": "slideRight", "grouping": "sections", "dividers": "hairline", "interaction": "static", "accent": "warm" }, "custom": false },
+      "buttonStyle": { "styleId": "stamp", "fineTune": { "size": "medium", "corners": "rounded", "labelWeight": "semibold", "icon": "none", "shadow": "subtle", "hover": "darken", "press": "sink", "accent": "warm" }, "custom": false },
+      "dataStyle": { "styleId": "ember", "fineTune": { "rowDensity": "standard", "headerStyle": "colored", "dividers": "solid", "numberStyle": "colorCoded", "accent": "warm" }, "custom": false },
+      "animation": "smooth",
+      "awsGuidelines": false
+    }
+  },
+  {
+    "id": "ink-and-air",
+    "name": "Ink & Air",
+    "description": "Whisper-quiet portfolio. Wireframe edges float in negative space, ink-style underlines replace buttons, and every element breathes. Less is the whole point.",
+    "author": "system",
+    "tags": ["dark", "portfolio", "minimal", "editorial"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "portfolio",
+      "selectedPurpose": "main-stage",
+      "theme": "ink-wash",
+      "modeFilter": "dark",
+      "customAccents": {},
+      "moodPreset": "minimal",
+      "moodDimensions": { "density": "spacious", "typography": "editorial", "interaction": "subtle", "embellishment": "none" },
+      "cardStyle": { "styleId": "wireframe", "fineTune": { "wireStroke": "standard", "wireDetail": "corners", "wireFill": "hint", "wireStyle": "geometric", "accent": "muted" }, "custom": false },
+      "navStyle": { "patternId": "breadcrumb", "fineTune": { "separator": "chevron", "density": "spacious", "hover": "underline", "interaction": "static", "accent": "muted" }, "custom": true },
+      "buttonStyle": { "styleId": "ink", "fineTune": { "size": "medium", "labelWeight": "semibold", "hover": "darken", "press": "sink", "accent": "muted", "underline": "hover" }, "custom": false },
+      "dataStyle": { "styleId": "linen", "fineTune": { "rowDensity": "spacious", "headerStyle": "subtle", "dividers": "hairline", "numberStyle": "proportional", "emptyState": "skeleton", "accent": "muted" }, "custom": true },
+      "animation": "none",
+      "awsGuidelines": false
+    }
+  },
+  {
+    "id": "the-war-room",
+    "name": "The War Room",
+    "description": "No decoration, no mercy. Blueprint grids, slab buttons that slam, zebra-striped ledger rows, and dense tabs. Built for people who eat spreadsheets for breakfast.",
+    "author": "system",
+    "tags": ["dark", "dashboard", "dense", "brutalist"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "dashboard",
+      "selectedPurpose": "command-center",
+      "theme": "charcoal-ember",
+      "modeFilter": "dark",
+      "customAccents": {},
+      "moodPreset": "data-dense",
+      "moodDimensions": { "density": "dense", "typography": "technical", "interaction": "snappy", "embellishment": "none" },
+      "cardStyle": { "styleId": "blueprint", "fineTune": { "blueprintZones": "header-body", "blueprintNotation": "none", "blueprintPrecision": "standard", "blueprintInk": "pen", "accent": "theme" }, "custom": false },
+      "navStyle": { "patternId": "tabs", "fineTune": { "tabStyle": "underline", "density": "compact", "hover": "bgTint", "interaction": "static", "accent": "theme" }, "custom": true },
+      "buttonStyle": { "styleId": "slab", "fineTune": { "size": "medium", "labelWeight": "heavy", "icon": "none", "shadow": "hardOffset", "hover": "darken", "press": "sink", "accent": "theme" }, "custom": false },
+      "dataStyle": { "styleId": "ledger", "fineTune": { "rowDensity": "compact", "headerStyle": "bold", "dividers": "zebra", "numberStyle": "tabularMono", "accent": "theme" }, "custom": false },
+      "animation": "none",
+      "awsGuidelines": false
+    }
+  },
+  {
+    "id": "main-stage",
+    "name": "Main Stage",
+    "description": "Your product deserves a standing ovation. Clay-textured cards, gradient ombre CTAs that demand clicks, capsule nav floating like stage lights. Go big or go home.",
+    "author": "system",
+    "tags": ["light", "marketing", "bold", "editorial"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "marketing",
+      "selectedPurpose": "main-stage",
+      "theme": "bold-editorial",
+      "modeFilter": "light",
+      "customAccents": {},
+      "moodPreset": "immersive",
+      "moodDimensions": { "density": "spacious", "typography": "editorial", "interaction": "dramatic", "embellishment": "rich" },
+      "cardStyle": { "styleId": "soft-clay", "fineTune": { "clayDepth": "medium", "clayMaterial": "clay", "clayInset": "gentle", "clayFinish": "satin", "accent": "theme" }, "custom": false },
+      "navStyle": { "patternId": "capsules", "fineTune": { "pillShape": "fullPill", "density": "balanced", "hover": "glow", "interaction": "static", "accent": "theme" }, "custom": false },
+      "buttonStyle": { "styleId": "ombre", "fineTune": { "size": "large", "corners": "pill", "labelWeight": "bold", "icon": "right", "shadow": "accentGlow", "hover": "lift", "press": "sink", "accent": "theme" }, "custom": true },
+      "dataStyle": { "styleId": "mosaic", "fineTune": { "rowDensity": "standard", "numberStyle": "highlighted", "charts": "sparklines", "accent": "theme" }, "custom": false },
+      "animation": "dynamic",
+      "awsGuidelines": false
+    }
+  },
+  {
+    "id": "sugar-rush",
+    "name": "Sugar Rush",
+    "description": "Dopamine hits on every scroll. Watercolor card washes bleed into aurora tones, capsule buttons bounce on hover, and the ribbon nav feels like a candy bar. Irresistibly fun.",
+    "author": "system",
+    "tags": ["dark", "social", "playful", "colorful"],
+    "createdAt": "2025-06-01",
+    "config": {
+      "appType": "social",
+      "selectedPurpose": "hangout",
+      "theme": "aurora",
+      "modeFilter": "dark",
+      "customAccents": {},
+      "moodPreset": "playful",
+      "moodDimensions": { "density": "balanced", "typography": "rounded", "interaction": "snappy", "embellishment": "moderate" },
+      "cardStyle": { "styleId": "watercolor", "fineTune": { "waterSaturation": "wash", "waterSpread": "bleed", "waterPaper": "textured", "waterBlend": "mono", "accent": "theme" }, "custom": false },
+      "navStyle": { "patternId": "ribbon", "fineTune": { "alignment": "center", "activeIndicator": "bottomLine", "density": "balanced", "sticky": "sticky", "hover": "underline", "interaction": "static", "accent": "theme" }, "custom": false },
+      "buttonStyle": { "styleId": "capsule", "fineTune": { "size": "medium", "labelWeight": "semibold", "icon": "left", "shadow": "subtle", "hover": "grow", "press": "shrink", "accent": "theme" }, "custom": false },
+      "dataStyle": { "styleId": "ticker", "fineTune": { "rowDensity": "standard", "dividers": "hairline", "numberStyle": "tabularMono", "accent": "theme" }, "custom": false },
+      "animation": "smooth",
+      "awsGuidelines": false
+    }
+  }
+]

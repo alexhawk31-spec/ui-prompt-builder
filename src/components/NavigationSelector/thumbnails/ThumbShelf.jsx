@@ -1,116 +1,98 @@
-export default function ThumbShelf({ accent }) {
+export default function ThumbShelf({ accent, label, desc }) {
+  const font = "'DM Sans', sans-serif";
+  const muted = "rgba(255,255,255,0.4)";
+  const links = ["Home", "Products", "About", "Contact"];
+
   return (
     <div
       style={{
         height: "100%",
         background: "#0d1018",
-        padding: 4,
         display: "flex",
-        gap: 3,
+        flexDirection: "column",
         borderRadius: 4,
         overflow: "hidden",
+        fontFamily: font,
       }}
     >
-      {/* Labeled sidebar */}
+      {/* Top navigation bar */}
       <div
         style={{
-          width: "30%",
-          flexShrink: 0,
           display: "flex",
-          flexDirection: "column",
-          gap: 2,
-          background: "rgba(255,255,255,0.04)",
-          borderRadius: 2,
-          padding: 3,
+          alignItems: "center",
+          gap: 6,
+          padding: "5px 6px 4px",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          flexShrink: 0,
         }}
       >
-        {/* Sidebar header */}
+        {/* Logo */}
         <div
           style={{
-            height: 3,
-            width: "60%",
-            background: "rgba(255,255,255,0.2)",
-            borderRadius: 1,
-            marginBottom: 2,
+            width: 7,
+            height: 7,
+            borderRadius: 2,
+            background: accent,
+            flexShrink: 0,
+            opacity: 0.85,
           }}
         />
-        {/* Nav rows: icon dot + label line */}
-        {[0, 1, 2, 3, 4].map((i) => (
-          <div
-            key={i}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 2,
-              padding: "1px 2px",
-              borderRadius: 2,
-              background: i === 2 ? accent + "22" : "transparent",
-            }}
-          >
+        {/* Nav links */}
+        {links.map((link, i) => {
+          const active = i === 1;
+          return (
             <div
+              key={link}
               style={{
-                width: 4,
-                height: 4,
-                borderRadius: 1,
-                flexShrink: 0,
-                background: i === 2 ? accent : "rgba(255,255,255,0.15)",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: 2,
               }}
-            />
-            <div
-              style={{
-                height: 2,
-                flex: 1,
-                borderRadius: 1,
-                background:
-                  i === 2 ? accent + "99" : "rgba(255,255,255,0.1)",
-              }}
-            />
-          </div>
-        ))}
+            >
+              <span
+                style={{
+                  fontSize: 7,
+                  color: active ? "rgba(255,255,255,0.9)" : muted,
+                  whiteSpace: "nowrap",
+                  lineHeight: 1,
+                }}
+              >
+                {link}
+              </span>
+              <div
+                style={{
+                  height: 2,
+                  width: "100%",
+                  borderRadius: 1,
+                  background: active ? accent : "transparent",
+                }}
+              />
+            </div>
+          );
+        })}
       </div>
 
-      {/* Content area */}
+      {/* Content area with placeholder cards */}
       <div
         style={{
           flex: 1,
           display: "flex",
-          flexDirection: "column",
-          gap: 3,
-          paddingTop: 4,
+          gap: 4,
+          padding: "6px 6px",
         }}
       >
-        <div
-          style={{
-            height: 3,
-            width: "65%",
-            background: "rgba(255,255,255,0.18)",
-            borderRadius: 1,
-          }}
-        />
-        <div
-          style={{
-            height: 2,
-            width: "90%",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: 1,
-          }}
-        />
-        <div
-          style={{
-            height: 2,
-            width: "75%",
-            background: "rgba(255,255,255,0.08)",
-            borderRadius: 1,
-          }}
-        />
-        <div
-          style={{
-            height: 2,
-            width: "55%",
-            background: "rgba(255,255,255,0.06)",
-            borderRadius: 1,
-          }}
-        />
+        {[0, 1, 2].map((i) => (
+          <div
+            key={i}
+            style={{
+              flex: 1,
+              background: "rgba(255,255,255,0.04)",
+              borderRadius: 3,
+              height: "100%",
+            }}
+          />
+        ))}
       </div>
     </div>
   );

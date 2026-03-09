@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useRef, useEffect } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import usePromptStore from "../../store/usePromptStore";
 import { CATEGORIES } from "../../constants/categories";
@@ -6,21 +6,27 @@ import { getShellColors } from "../../utils/shellColors";
 import { isCategoryConfigured, getSelectionSummary } from "../../utils/categoryHelpers";
 import { generateCategorySnippet } from "../../utils/generatePrompt";
 import ThemeSelector from "../ThemeSelector";
-import PurposeSelector from "../PurposeSelector";
+import ProjectPicker from "../ProjectPicker";
 import MoodSelector from "../MoodSelector";
 import CardStyleSelector from "../ComponentStyleSelector";
 import NavigationSelector from "../NavigationSelector";
 import ButtonSelector from "../ButtonSelector";
+import DataDisplaySelector from "../DataDisplaySelector";
+import AnimationSelector from "../AnimationSelector";
+import TemplateLibrary from "../TemplateLibrary";
 import PromptViewPanel from "../PromptViewPanel";
 import Icon from "../shared/Icon";
 
 const PANEL_COMPONENTS = {
-  appType: PurposeSelector,
+  appType: ProjectPicker,
   theme: ThemeSelector,
   mood: MoodSelector,
   cards: CardStyleSelector,
+  data: DataDisplaySelector,
   navigation: NavigationSelector,
   buttons: ButtonSelector,
+  animation: AnimationSelector,
+  templates: TemplateLibrary,
   prompt: PromptViewPanel,
 };
 
@@ -31,10 +37,8 @@ const CLEAR_ACTIONS = {
   cards: "clearCardStyle",
   navigation: "clearNavStyle",
   buttons: "clearButtonStyle",
+  data: "clearDataStyle",
   animation: "clearAnimation",
-  appDescription: "clearAppDescription",
-  awsGuidelines: "clearAwsGuidelines",
-  customNotes: "clearCustomNotes",
 };
 
 function ComingSoonPanel({ categoryId }) {
@@ -93,6 +97,11 @@ export default function MainPanel() {
       setTimeout(() => setCopied(false), 2000);
     });
   }, [activeCategory, storeState]);
+
+  const scrollRef = useRef(null);
+  useEffect(() => {
+    if (scrollRef.current) scrollRef.current.scrollTop = 0;
+  }, [activeCategory]);
 
   const catColor = cat?.color || "#818cf8";
 
@@ -169,8 +178,8 @@ export default function MainPanel() {
             </div>
           </div>
 
-          {/* Right: Copy + Reset (only when section has data) */}
-          {hasData && (
+          {/* Right: Copy + Reset (only when section has data, hidden for prompt panel) */}
+          {hasData && activeCategory !== "prompt" && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <button
                 onClick={handleCopy}
@@ -241,7 +250,7 @@ export default function MainPanel() {
       </div>
 
       {/* Config content */}
-      <div style={{ flex: 1, padding: "10px 14px 14px", overflowY: "auto" }}>
+      <div ref={scrollRef} style={{ flex: 1, padding: "10px 14px 14px", overflowY: "auto" }}>
         <div
           style={{
             background: c.panelBg,

@@ -73,29 +73,30 @@ const TERMINAL_SECTIONS = [
   { categoryId: "navigation", flag: "navigation" },
   { categoryId: "buttons", flag: "button-style" },
   { categoryId: "animation", flag: "animation" },
-  { categoryId: "appDescription", flag: "app-info" },
-  { categoryId: "awsGuidelines", flag: "aws-guide" },
-  { categoryId: "customNotes", flag: "notes" },
 ];
 
 function useStoreState() {
   return {
     configuredSections: usePromptStore((s) => s.configuredSections),
     selectedPurpose: usePromptStore((s) => s.selectedPurpose),
+    outputType: usePromptStore((s) => s.outputType),
+    outputPurpose: usePromptStore((s) => s.outputPurpose),
+    buildMode: usePromptStore((s) => s.buildMode),
+    appStarterEnabled: usePromptStore((s) => s.appStarterEnabled),
     theme: usePromptStore((s) => s.theme),
     customAccents: usePromptStore((s) => s.customAccents),
+    customColors: usePromptStore((s) => s.customColors),
     modeFilter: usePromptStore((s) => s.modeFilter),
     moodPreset: usePromptStore((s) => s.moodPreset),
     moodDimensions: usePromptStore((s) => s.moodDimensions),
     moodCustom: usePromptStore((s) => s.moodCustom),
     cardStyle: usePromptStore((s) => s.cardStyle),
     navStyle: usePromptStore((s) => s.navStyle),
+    navSelections: usePromptStore((s) => s.navSelections),
     buttonStyle: usePromptStore((s) => s.buttonStyle),
+    dataStyle: usePromptStore((s) => s.dataStyle),
     animation: usePromptStore((s) => s.animation),
-    appDescription: usePromptStore((s) => s.appDescription),
-    appName: usePromptStore((s) => s.appName),
-    awsGuidelines: usePromptStore((s) => s.awsGuidelines),
-    customNotes: usePromptStore((s) => s.customNotes),
+    faviconDesc: usePromptStore((s) => s.faviconDesc),
   };
 }
 
