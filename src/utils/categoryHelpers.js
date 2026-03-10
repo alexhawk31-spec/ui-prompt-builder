@@ -15,6 +15,8 @@ export function isCategoryConfigured(state, categoryId) {
       return state.theme !== null || state.configuredSections?.includes("theme");
     case "mood":
       return state.moodDimensions !== null;
+    case "layouts":
+      return state.slideLayouts?.length > 0;
     case "cards":
       return state.cardStyle !== null;
     case "data":
@@ -77,10 +79,14 @@ export function getSelectionSummary(state, categoryId) {
       const preset = MOOD_PRESETS.find((x) => x.id === state.moodPreset);
       return preset ? { text: preset.name } : { text: "Custom" };
     }
+    case "layouts": {
+      const count = state.slideLayouts?.length || 0;
+      return count > 0 ? { text: `${count} layout${count !== 1 ? "s" : ""}` } : null;
+    }
     case "cards": {
       if (!state.cardStyle) return null;
-      // Multi-select mode
-      if (state.outputType === "presentation" || state.outputType === "one-pager") {
+      // Multi-select mode for one-pager
+      if (state.outputType === "one-pager") {
         const count = state.cardStyle.styleId?.split(",").filter(Boolean).length || 0;
         return { text: `${count} selected` };
       }

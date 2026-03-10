@@ -1,11 +1,26 @@
+import { useMemo } from "react";
 import usePromptStore from "../../store/usePromptStore";
 import { getShellColors } from "../../utils/shellColors";
-import Icon from "../shared/Icon";
+import { THEMES } from "../../constants/themes";
+import { getPreviewPalette } from "../PurposeSelector/constants";
 import MiniPreview from "./MiniPreview";
 
-export default function PresetCard({ preset, isSelected, onClick, shellColors }) {
+export default function PresetCard({ preset, isSelected, onClick }) {
   const shellMode = usePromptStore((s) => s.shellMode);
-  const c = shellColors || getShellColors(shellMode === "light");
+  const c = getShellColors(shellMode === "light");
+  const themeId = usePromptStore((s) => s.theme);
+  const customAccents = usePromptStore((s) => s.customAccents);
+  const customColors = usePromptStore((s) => s.customColors);
+  const previewMode = usePromptStore((s) => s.previewMode);
+
+  const palette = useMemo(() => {
+    const base = THEMES.find((t) => t.id === themeId);
+    if (!base) return null;
+    const overrides = customColors[themeId] || {};
+    const accent = customAccents[themeId] || base.preview.accent;
+    const effectiveTheme = { ...base, preview: { ...base.preview, ...overrides, accent } };
+    return getPreviewPalette(previewMode === "dark", effectiveTheme);
+  }, [themeId, customAccents, customColors, previewMode]);
 
   return (
     <button
@@ -16,7 +31,7 @@ export default function PresetCard({ preset, isSelected, onClick, shellColors })
         flexDirection: "column",
         background: isSelected ? "rgba(129,140,248,0.06)" : c.dim,
         border: isSelected
-          ? "1.5px solid rgba(129,140,248,0.4)"
+          ? "2px solid rgba(129,140,248,0.5)"
           : `1px solid ${c.panelBorder}`,
         borderRadius: 14,
         overflow: "hidden",
@@ -26,73 +41,36 @@ export default function PresetCard({ preset, isSelected, onClick, shellColors })
         padding: 0,
         transition: "all 0.2s ease",
         outline: "none",
+        boxShadow: isSelected ? "0 4px 20px rgba(129,140,248,0.2)" : "none",
       }}
     >
-      {/* Preview area */}
-      <div style={{ height: 140, padding: 6, paddingBottom: 0 }}>
+      {/* Preview fills the entire card */}
+      <div style={{ height: 140, position: "relative" }}>
+        <div style={{ height: "100%", overflow: "hidden" }}>
+          <MiniPreview v={preset.v} palette={palette} />
+        </div>
+
+        {/* Name overlay at bottom */}
         <div
           style={{
-            height: "100%",
-            borderRadius: 10,
-            overflow: "hidden",
-            border: isSelected
-              ? "1px solid rgba(129,140,248,0.2)"
-              : `1px solid ${c.panelBorder}`,
+            position: "absolute",
+            bottom: 0,
+            left: 0,
+            right: 0,
+            padding: "16px 10px 8px",
+            background: `linear-gradient(to top, ${palette?.bg || preset.v.bg}ee 30%, ${palette?.bg || preset.v.bg}00 100%)`,
           }}
         >
-          <MiniPreview v={preset.v} />
-        </div>
-      </div>
-
-      {/* Info area */}
-      <div style={{ padding: "10px 12px 12px" }}>
-        {/* Icon + name row */}
-        <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-          <div
-            style={{
-              width: 22,
-              height: 22,
-              borderRadius: 6,
-              background: isSelected
-                ? "rgba(129,140,248,0.12)"
-                : c.dim,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              border: `1px solid ${
-                isSelected ? "rgba(129,140,248,0.25)" : c.panelBorder
-              }`,
-            }}
-          >
-            <Icon
-              name={preset.icon}
-              size={12}
-              color={isSelected ? "#818cf8" : c.muted}
-            />
-          </div>
           <span
             style={{
-              fontSize: 13,
+              fontSize: 12,
               fontWeight: 700,
-              color: isSelected ? c.text : c.muted,
+              color: palette?.text || preset.v.text,
+              textShadow: `0 1px 3px ${palette?.bg || preset.v.bg}80`,
             }}
           >
             {preset.name}
           </span>
-        </div>
-
-        {/* Tagline */}
-        <div
-          style={{
-            fontSize: 10,
-            color: c.muted,
-            paddingLeft: 28,
-            marginTop: 2,
-            lineHeight: 1.3,
-            opacity: 0.8,
-          }}
-        >
-          {preset.tagline}
         </div>
       </div>
 
@@ -101,8 +79,8 @@ export default function PresetCard({ preset, isSelected, onClick, shellColors })
         <div
           style={{
             position: "absolute",
-            top: 8,
-            right: 8,
+            top: 6,
+            right: 6,
             width: 20,
             height: 20,
             borderRadius: 6,

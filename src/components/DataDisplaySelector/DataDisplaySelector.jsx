@@ -20,6 +20,19 @@ import ThumbTicker from "./thumbnails/ThumbTicker";
 import ThumbLineup from "./thumbnails/ThumbLineup";
 import ThumbMosaic from "./thumbnails/ThumbMosaic";
 import ThumbTeletype from "./thumbnails/ThumbTeletype";
+import {
+  ThumbCompactStat,
+  ThumbMiniTable,
+  ThumbSimpleBar,
+  ThumbComparisonList,
+} from "./thumbnails/onePager";
+
+const OP_THUMB_MAP = {
+  "compact-stat": ThumbCompactStat,
+  "mini-table": ThumbMiniTable,
+  "simple-bar": ThumbSimpleBar,
+  "comparison-list": ThumbComparisonList,
+};
 
 const THUMB_MAP = {
   ledger: ThumbLedger,
@@ -139,17 +152,64 @@ export default function DataDisplaySelector() {
       }
     };
 
+    // One-pager gets visual thumbnail grid
+    if (outputType === "one-pager") {
+      return (
+        <>
+          <div style={{ marginBottom: 12 }}>
+            <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>Data Elements</div>
+            <div style={{ fontSize: 11, color: c.muted }}>How data appears in your one-pager</div>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 8, marginBottom: 20 }}>
+            {options.map((opt) => {
+              const active = selections.includes(opt.id);
+              const Thumb = OP_THUMB_MAP[opt.id];
+              return (
+                <button
+                  key={opt.id}
+                  onClick={() => handleToggle(opt.id)}
+                  style={{
+                    padding: 0,
+                    borderRadius: 12,
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                    border: active ? `2px solid ${SECTION_COLOR}` : `1px solid ${c.panelBorder}`,
+                    background: active ? `${SECTION_COLOR}08` : "rgba(255,255,255,0.03)",
+                    display: "flex",
+                    flexDirection: "column",
+                    overflow: "hidden",
+                    transition: "all 0.15s",
+                    boxShadow: active ? `0 4px 20px ${SECTION_COLOR}20` : "none",
+                    textAlign: "left",
+                    position: "relative",
+                  }}
+                >
+                  <div style={{ height: 110, overflow: "hidden" }}>
+                    {Thumb && <Thumb accent={SECTION_COLOR} />}
+                  </div>
+                  {active && (
+                    <div style={{
+                      position: "absolute", top: 4, right: 4, width: 16, height: 16, borderRadius: 4,
+                      background: SECTION_COLOR, display: "flex", alignItems: "center", justifyContent: "center",
+                    }}>
+                      <Icon name="check" size={9} color="#0c0e14" />
+                    </div>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+          <NextStepButton targetCategory="navigation" label="Navigation" />
+        </>
+      );
+    }
+
+    // Presentation keeps SimpleMultiSelect
     return (
       <>
         <div style={{ marginBottom: 12 }}>
-          <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>
-            {outputType === "presentation" ? "Data Visualizations" : "Data Elements"}
-          </div>
-          <div style={{ fontSize: 11, color: c.muted }}>
-            {outputType === "presentation"
-              ? "How data is presented in your slides"
-              : "How data appears in your one-pager"}
-          </div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>Data Visualizations</div>
+          <div style={{ fontSize: 11, color: c.muted }}>How data is presented in your slides</div>
         </div>
         <SimpleMultiSelect
           options={options}

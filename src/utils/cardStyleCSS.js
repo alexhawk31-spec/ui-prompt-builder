@@ -15,33 +15,54 @@ export function getCardStyleCSS(cardStyle, p) {
 
   switch (cardStyle.styleId) {
     case "frosted": {
-      const blur = { breath: 6, morning: 16, snowstorm: 28, glacier: 40 }[ft.frostDepth] || 16;
-      const opacity = { breath: 0.04, morning: 0.06, snowstorm: 0.1, glacier: 0.16 }[ft.frostDepth] || 0.06;
+      // Detect light vs dark palette to flip frost channels
+      const isLight = p.bg && (p.bg === "#ffffff" || p.bg === "#fff" || p.bg.toLowerCase() > "#aaaaaa");
 
-      const tintMap = { clear: "255,255,255", cool: "200,220,255", warm: "255,230,200", iridescent: "230,220,255" };
-      const tint = tintMap[ft.frostTint] || "255,255,255";
+      const blur = { breath: 6, morning: 16, snowstorm: 28, glacier: 40 }[ft.frostDepth] || 16;
+      const darkOpacity = { breath: 0.06, morning: 0.1, snowstorm: 0.16, glacier: 0.22 }[ft.frostDepth] || 0.1;
+      const lightOpacity = { breath: 0.04, morning: 0.07, snowstorm: 0.12, glacier: 0.18 }[ft.frostDepth] || 0.07;
+      const adjustedOpacity = isLight ? lightOpacity : darkOpacity;
+
+      const frostBase = isLight ? "0,0,0" : "255,255,255";
+
+      const tintMap = isLight
+        ? { clear: "0,0,0", cool: "30,50,100", warm: "80,50,20", iridescent: "40,30,80" }
+        : { clear: "255,255,255", cool: "200,220,255", warm: "255,230,200", iridescent: "230,220,255" };
+      const tint = tintMap[ft.frostTint] || frostBase;
 
       const borderMap = {
         seamless: "1px solid transparent",
-        etched: "1px solid rgba(255,255,255,0.12)",
-        beveled: "1px solid rgba(255,255,255,0.18)",
-        framed: "1px solid rgba(255,255,255,0.25)",
+        etched: `1px solid rgba(${frostBase},${isLight ? 0.08 : 0.12})`,
+        beveled: `1px solid rgba(${frostBase},${isLight ? 0.12 : 0.18})`,
+        framed: `1px solid rgba(${frostBase},${isLight ? 0.15 : 0.25})`,
       };
 
       const lightMap = {
         ambient: "none",
-        toplit: "inset 0 1px 0 rgba(255,255,255,0.08)",
-        rimlit: "inset 0 1px 0 rgba(255,255,255,0.12), inset 1px 0 0 rgba(255,255,255,0.06)",
-        prismatic: "inset 0 1px 0 rgba(255,255,255,0.1)",
+        toplit: `inset 0 1px 0 rgba(${frostBase},0.08)`,
+        rimlit: `inset 0 1px 0 rgba(${frostBase},0.12), inset 1px 0 0 rgba(${frostBase},0.06)`,
+        prismatic: `inset 0 1px 0 rgba(${frostBase},0.1)`,
       };
 
+      // Combine the frost tint with a subtle accent gradient so the card
+      // has visible character even on flat-color backgrounds where
+      // backdrop-filter has nothing to blur.
+      const accentTint = isLight ? 0.04 : 0.06;
+      const baseShadow = lightMap[ft.frostLight] || "none";
+      const frostShadow = baseShadow === "none"
+        ? `0 2px 8px rgba(${isLight ? "0,0,0" : "0,0,0"},${isLight ? 0.06 : 0.15})`
+        : `${baseShadow}, 0 2px 8px rgba(0,0,0,${isLight ? 0.06 : 0.15})`;
+
       return {
-        background: `rgba(${tint},${opacity})`,
+        background: `rgba(${tint},${adjustedOpacity})`,
         backdropFilter: `blur(${blur}px)`,
         WebkitBackdropFilter: `blur(${blur}px)`,
         border: borderMap[ft.frostEdge] || borderMap.etched,
         borderRadius: 12,
-        boxShadow: lightMap[ft.frostLight] || "none",
+        boxShadow: frostShadow,
+        extra: {
+          backgroundImage: `linear-gradient(135deg, ${accent}${Math.round(accentTint * 255).toString(16).padStart(2, "0")}, transparent 60%)`,
+        },
       };
     }
 

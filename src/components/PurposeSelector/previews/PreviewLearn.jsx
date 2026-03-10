@@ -10,6 +10,13 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
   const hWt = m.headWeight || 700;
   const cShadow = m.cardShadow || "none";
   const tr = m.transition || "all 0.2s";
+  const hIt = m.headItalic;
+  const glass = m.glassCard;
+  const glow = m.accentGlow;
+  const gAlpha = m.glassAlpha || "ff";
+  const gBlur = m.glassBlur || 0;
+  const glowSz = m.glowSize || 0;
+  const bdrW = m.borderWeight ?? 1;
 
   const cs = cardCSS || {};
   const { extra: cExtra, ...cBase } = cs;
@@ -17,14 +24,19 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
   const btnP = bs.primary || {};
   const btnS = bs.secondary || {};
 
+  const cardBg = glass ? `${p.card}${gAlpha}` : p.card;
+  const cardBlur = glass ? { backdropFilter: `blur(${gBlur}px)`, WebkitBackdropFilter: `blur(${gBlur}px)` } : {};
+  const cardBorder = bdrW === 0 ? "none" : `${bdrW}px solid ${p.border}`;
+  const accentShadow = glow ? `0 0 ${glowSz}px ${p.accent}40` : undefined;
+
   return (
     <div style={{ height: "100%", display: "flex", flexDirection: "column", padding: pad, gap, background: p.bg, fontFamily: bFont }}>
       {/* Header */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontSize: fs(15), fontFamily: hFont, fontWeight: hWt, color: p.text }}>Getting Started</div>
+        <div style={{ fontSize: fs(15), fontFamily: hFont, fontWeight: hWt, color: p.text, fontStyle: hIt ? "italic" : "normal" }}>Getting Started</div>
         <div style={{ display: "flex", gap: 4 }}>
-          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Skip</div>
-          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>Next</div>
+          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.surface, border: cardBorder, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Skip</div>
+          <div style={{ padding: "3px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, boxShadow: accentShadow, ...btnP }}>Next</div>
         </div>
       </div>
 
@@ -47,13 +59,14 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
             flex: 1,
             borderRadius: cRad,
             padding: pad,
-            background: lesson.active ? p.accentBg : p.card,
-            border: `1.5px solid ${lesson.active ? p.accent : p.border}`,
+            background: lesson.active ? (glass ? `${p.accentBg}${gAlpha}` : p.accentBg) : cardBg,
+            border: `${Math.max(bdrW, 1)}px solid ${lesson.active ? p.accent : p.border}`,
             display: "flex",
             alignItems: "center",
             gap: gap * 1.2,
-            boxShadow: cShadow,
+            boxShadow: lesson.active && glow ? `0 0 ${Math.round(glowSz * 0.5)}px ${p.accent}30` : cShadow,
             transition: tr,
+            ...cardBlur,
             ...cBase,
             ...(cExtra || {}),
           }}>
@@ -65,11 +78,11 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
               )}
             </div>
             <div style={{ flex: 1, minWidth: 0 }}>
-              <div style={{ fontSize: fs(11), fontWeight: hWt, fontFamily: hFont, color: p.text }}>{lesson.title}</div>
+              <div style={{ fontSize: fs(11), fontWeight: hWt, fontFamily: hFont, color: p.text, fontStyle: hIt ? "italic" : "normal" }}>{lesson.title}</div>
               <div style={{ fontSize: fs(8), color: p.muted, marginTop: 2 }}>{lesson.desc}</div>
             </div>
             {lesson.active && (
-              <div style={{ padding: "3px 8px", borderRadius: cRad, background: p.accent, fontSize: fs(7), fontWeight: 700, color: "#fff", flexShrink: 0, transition: tr, ...btnP }}>Start</div>
+              <div style={{ padding: "3px 8px", borderRadius: cRad, background: p.accent, fontSize: fs(7), fontWeight: 700, color: "#fff", flexShrink: 0, transition: tr, boxShadow: accentShadow, ...btnP }}>Start</div>
             )}
           </div>
         ))}
@@ -77,8 +90,8 @@ export default function PreviewLearn({ p, mood, cardCSS, buttonCSS }) {
 
       {/* Bottom bar */}
       <div style={{ display: "flex", justifyContent: "space-between", paddingTop: gap * 0.5 }}>
-        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(9), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Save for Later</div>
-        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.accent, fontSize: fs(9), fontWeight: hWt, color: "#fff", transition: tr, ...btnP }}>Complete Lesson</div>
+        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.surface, border: cardBorder, fontSize: fs(9), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Save for Later</div>
+        <div style={{ padding: `${Math.round(pad * 0.4)}px ${pad}px`, borderRadius: cRad, background: p.accent, fontSize: fs(9), fontWeight: hWt, color: "#fff", transition: tr, boxShadow: accentShadow, ...btnP }}>Complete Lesson</div>
       </div>
     </div>
   );

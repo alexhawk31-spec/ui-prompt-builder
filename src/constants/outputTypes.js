@@ -60,6 +60,7 @@ export const STEP_AVAILABILITY = {
   app: {
     theme: true,
     mood: true,
+    layouts: false,
     cards: true,
     data: true,
     navigation: true,
@@ -71,8 +72,9 @@ export const STEP_AVAILABILITY = {
   presentation: {
     theme: true,
     mood: true,
-    cards: true,
-    data: true,
+    layouts: true,
+    cards: false,
+    data: false,
     navigation: true,
     buttons: false,
     animation: true,
@@ -82,6 +84,7 @@ export const STEP_AVAILABILITY = {
   "one-pager": {
     theme: true,
     mood: true,
+    layouts: false,
     cards: true,
     data: true,
     navigation: true,
@@ -95,6 +98,16 @@ export const STEP_AVAILABILITY = {
 // ── Disabled Step Tooltips ──
 
 export const DISABLED_STEP_TOOLTIPS = {
+  layouts: {
+    app: "Layouts are for presentations only.",
+    "one-pager": "Layouts are for presentations only.",
+  },
+  cards: {
+    presentation: "Cards don't apply to presentations — use Layouts instead.",
+  },
+  data: {
+    presentation: "Data display is covered by the Chart / Data slide layouts.",
+  },
   buttons: {
     presentation: "Buttons don't apply to presentations.",
     "one-pager": "Buttons don't apply to one-pagers.",
@@ -151,8 +164,8 @@ export const USAGE_TIPS = {
 // ── Helper: check if a step is available for the current output type ──
 
 export function isStepAvailable(outputType, stepId) {
-  if (!outputType) return false; // No type selected = all locked
-  if (stepId === "appType") return true; // Always available
+  if (stepId === "appType" || stepId === "templates" || stepId === "prompt") return true; // Always available
+  if (!outputType) return false; // No type selected = rest locked
   const avail = STEP_AVAILABILITY[outputType];
   if (!avail) return false;
   return avail[stepId] !== false;

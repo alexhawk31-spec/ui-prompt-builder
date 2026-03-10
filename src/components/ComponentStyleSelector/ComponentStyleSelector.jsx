@@ -5,10 +5,7 @@ import { getShellColors } from "../../utils/shellColors";
 import { THEMES } from "../../constants/themes";
 import { getPreviewPalette } from "../PurposeSelector/constants";
 import { CARD_STYLES, CARD_FINE_TUNE_DIMS } from "./constants";
-import {
-  PRESENTATION_CARD_OPTIONS,
-  ONE_PAGER_CARD_OPTIONS,
-} from "../../constants/modeOptions";
+import { ONE_PAGER_CARD_OPTIONS } from "../../constants/modeOptions";
 import SimpleMultiSelect from "../shared/SimpleMultiSelect";
 import Icon from "../shared/Icon";
 import NextStepButton from "../shared/NextStepButton";
@@ -21,6 +18,35 @@ import ThumbNeon from "./thumbnails/ThumbNeon";
 import ThumbSoftClay from "./thumbnails/ThumbSoftClay";
 import ThumbRaw from "./thumbnails/ThumbRaw";
 import ThumbWatercolor from "./thumbnails/ThumbWatercolor";
+import {
+  ThumbKeyMetricsRow,
+  ThumbPullQuote,
+  ThumbCalloutBlock,
+  ThumbTwoColumnText,
+  ThumbFeatureList,
+  ThumbTimeline,
+  ThumbComparisonTable,
+  ThumbIconFeatureGrid,
+  ThumbCitationsBlock,
+  ThumbTestimonialCard,
+  ThumbProgressBars,
+  ThumbCTABanner,
+} from "./thumbnails/onePager";
+
+const OP_THUMB_MAP = {
+  "key-metrics-row": ThumbKeyMetricsRow,
+  "pull-quote": ThumbPullQuote,
+  "callout-block": ThumbCalloutBlock,
+  "two-column-text": ThumbTwoColumnText,
+  "feature-list": ThumbFeatureList,
+  "timeline": ThumbTimeline,
+  "comparison-table": ThumbComparisonTable,
+  "icon-feature-grid": ThumbIconFeatureGrid,
+  "citations-block": ThumbCitationsBlock,
+  "testimonial-card": ThumbTestimonialCard,
+  "progress-bars": ThumbProgressBars,
+  "cta-banner": ThumbCTABanner,
+};
 
 const THUMB_MAP = {
   frosted: ThumbFrosted,
@@ -124,11 +150,10 @@ export default function CardStyleSelector() {
   const outputType = usePromptStore((s) => s.outputType);
   const c = getShellColors(shellMode === "light");
 
-  // ── Presentation / One Pager: simple multi-select ──
-  if (outputType === "presentation" || outputType === "one-pager") {
-    const options = outputType === "presentation" ? PRESENTATION_CARD_OPTIONS : ONE_PAGER_CARD_OPTIONS;
+  // ── One Pager: simple multi-select for content blocks ──
+  if (outputType === "one-pager") {
+    const options = ONE_PAGER_CARD_OPTIONS;
     const SECTION_COLOR = "#818cf8";
-    // Store selections as cardStyle.styleId = comma-separated IDs
     const selections = cardStyle?.styleId?.split(",").filter(Boolean) || [];
 
     const handleToggle = (id) => {
@@ -149,20 +174,51 @@ export default function CardStyleSelector() {
       <>
         <div style={{ marginBottom: 12 }}>
           <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>
-            {outputType === "presentation" ? "Slide Types" : "Content Blocks"}
+            Content Blocks
           </div>
           <div style={{ fontSize: 11, color: c.muted }}>
-            {outputType === "presentation"
-              ? "Select the slide layouts to include in your deck"
-              : "Select the content block types to include"}
+            Select the content block types to include
           </div>
         </div>
-        <SimpleMultiSelect
-          options={options}
-          selections={selections}
-          onToggle={handleToggle}
-          color={SECTION_COLOR}
-        />
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr", gap: 8, marginBottom: 20 }}>
+          {options.map((opt) => {
+            const active = selections.includes(opt.id);
+            const Thumb = OP_THUMB_MAP[opt.id];
+            return (
+              <button
+                key={opt.id}
+                onClick={() => handleToggle(opt.id)}
+                style={{
+                  padding: 0,
+                  borderRadius: 12,
+                  cursor: "pointer",
+                  fontFamily: "inherit",
+                  border: active ? `2px solid ${SECTION_COLOR}` : `1px solid ${c.panelBorder}`,
+                  background: active ? `${SECTION_COLOR}08` : "rgba(255,255,255,0.03)",
+                  display: "flex",
+                  flexDirection: "column",
+                  overflow: "hidden",
+                  transition: "all 0.15s",
+                  boxShadow: active ? `0 4px 20px ${SECTION_COLOR}20` : "none",
+                  textAlign: "left",
+                  position: "relative",
+                }}
+              >
+                <div style={{ height: 110, overflow: "hidden" }}>
+                  {Thumb && <Thumb accent={SECTION_COLOR} />}
+                </div>
+                {active && (
+                  <div style={{
+                    position: "absolute", top: 4, right: 4, width: 16, height: 16, borderRadius: 4,
+                    background: SECTION_COLOR, display: "flex", alignItems: "center", justifyContent: "center",
+                  }}>
+                    <Icon name="check" size={9} color="#0c0e14" />
+                  </div>
+                )}
+              </button>
+            );
+          })}
+        </div>
         <NextStepButton targetCategory="data" label="Data Display" />
       </>
     );

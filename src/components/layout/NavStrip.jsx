@@ -37,16 +37,15 @@ export default function NavStrip() {
         flexShrink: 0,
       }}
     >
-      {/* Step items */}
-      {CATEGORIES.map((cat) => {
+      {/* Step items — customization steps only (exclude templates + prompt) */}
+      {CATEGORIES.filter((cat) => cat.id !== "templates" && cat.id !== "prompt").map((cat) => {
         const isActive = activeCategory === cat.id;
         const isConfigured = configuredSections.includes(cat.id);
-        const isProject = cat.id === "appType";
-        const available = isProject || isStepAvailable(outputType, cat.id);
-        const isDisabled = !isProject && !available;
+        const alwaysOpen = cat.id === "appType";
+        const available = alwaysOpen || isStepAvailable(outputType, cat.id);
+        const isDisabled = !alwaysOpen && !available;
         const tooltip = isDisabled ? getDisabledTooltip(outputType, cat.id) : null;
-        // Steps are locked (dimmed but not grayed) when no output type selected
-        const isLocked = !isProject && !outputType;
+        const isLocked = !alwaysOpen && !outputType;
 
         return (
           <button
@@ -55,13 +54,13 @@ export default function NavStrip() {
               if (isDisabled || isLocked) return;
               setActiveCategory(cat.id);
             }}
-            title={tooltip || (isLocked ? "Select a project type first" : undefined)}
+            title={isDisabled ? (tooltip || "Doesn't apply to this project type") : isLocked ? "Select a project type first" : undefined}
             style={{
               width: "100%",
               height: 34,
               borderRadius: 8,
               border: "none",
-              cursor: isDisabled || isLocked ? "not-allowed" : "pointer",
+              cursor: isDisabled || isLocked ? "default" : "pointer",
               background: isActive
                 ? "rgba(255,255,255,0.15)"
                 : isConfigured && !isDisabled
@@ -111,10 +110,9 @@ export default function NavStrip() {
                       ? "#fff"
                       : isConfigured
                         ? "#6ee7b7"
-                        : "rgba(255,255,255,0.25)"
+                        : "rgba(255,255,255,0.5)"
                 }
               />
-              {/* Green dot badge for configured (not active) */}
               {isConfigured && !isActive && !isDisabled && (
                 <div
                   style={{
@@ -130,35 +128,18 @@ export default function NavStrip() {
                   }}
                 />
               )}
-              {/* Slash micro-icon for disabled steps */}
-              {isDisabled && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: -2,
-                    right: -4,
-                    width: 8,
-                    height: 8,
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <Icon name="slash" size={7} color="rgba(255,255,255,0.3)" />
-                </div>
-              )}
             </div>
             <span
               style={{
                 fontSize: 11,
-                fontWeight: isActive ? 700 : 500,
+                fontWeight: isActive ? 700 : 600,
                 color: isDisabled
                   ? "rgba(255,255,255,0.15)"
                   : isActive
                     ? "#fff"
                     : isConfigured
                       ? "#6ee7b7"
-                      : "rgba(255,255,255,0.3)",
+                      : "rgba(255,255,255,0.55)",
                 whiteSpace: "nowrap",
                 overflow: "hidden",
                 textOverflow: "ellipsis",
@@ -173,6 +154,69 @@ export default function NavStrip() {
 
       {/* Spacer */}
       <div style={{ flex: 1 }} />
+
+      {/* Divider */}
+      <div style={{ height: 1, background: "rgba(255,255,255,0.08)", margin: "4px 10px" }} />
+
+      {/* Bottom items — Templates & Prompt as standout buttons */}
+      {CATEGORIES.filter((cat) => cat.id === "templates" || cat.id === "prompt").map((cat) => {
+        const isActive = activeCategory === cat.id;
+        const isPrompt = cat.id === "prompt";
+        return (
+          <button
+            key={cat.id}
+            onClick={() => setActiveCategory(cat.id)}
+            style={{
+              width: "100%",
+              height: 36,
+              borderRadius: 8,
+              border: isActive ? `1.5px solid ${cat.color}` : `1px solid ${cat.color}50`,
+              cursor: "pointer",
+              background: isActive
+                ? `${cat.color}35`
+                : `${cat.color}20`,
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              padding: "0 10px",
+              position: "relative",
+              transition: "all 0.15s",
+              fontFamily: "inherit",
+              marginTop: isPrompt ? 4 : 0,
+              boxShadow: isActive ? `0 0 12px ${cat.color}30` : `0 0 8px ${cat.color}10`,
+            }}
+            onMouseEnter={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.background = `${cat.color}30`;
+                e.currentTarget.style.borderColor = `${cat.color}80`;
+              }
+            }}
+            onMouseLeave={(e) => {
+              if (!isActive) {
+                e.currentTarget.style.background = `${cat.color}20`;
+                e.currentTarget.style.borderColor = `${cat.color}50`;
+              }
+            }}
+          >
+            <Icon
+              name={cat.icon}
+              size={14}
+              color={cat.color}
+            />
+            <span
+              style={{
+                fontSize: 11,
+                fontWeight: 700,
+                color: cat.color,
+                whiteSpace: "nowrap",
+                letterSpacing: "0.01em",
+              }}
+            >
+              {cat.navLabel || cat.label}
+            </span>
+          </button>
+        );
+      })}
 
       {/* Summary button */}
       <button

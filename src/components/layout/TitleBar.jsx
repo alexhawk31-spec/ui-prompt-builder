@@ -4,14 +4,15 @@ import { getShellColors } from "../../utils/shellColors";
 import Icon from "../shared/Icon";
 import ScissorsMascot from "../shared/ScissorsMascot";
 
-const ADMIN_PASSWORD = "pintuck";
-const CLICK_THRESHOLD = 5;
-const CLICK_WINDOW = 3000; // 3 seconds
+const ADMIN_PASSWORD = "craft";
+const CLICK_THRESHOLD = 3;
+const CLICK_WINDOW = 800;
 
 export default function TitleBar() {
   const shellMode = usePromptStore((s) => s.shellMode);
   const toggleShellMode = usePromptStore((s) => s.toggleShellMode);
   const resetAll = usePromptStore((s) => s.resetAll);
+  const setActiveCategory = usePromptStore((s) => s.setActiveCategory);
   const setAdminMode = usePromptStore((s) => s.setAdminMode);
   const isLight = shellMode === "light";
   const c = getShellColors(isLight);
@@ -96,7 +97,7 @@ export default function TitleBar() {
         <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
           {/* Reset all */}
           <button
-            onClick={resetAll}
+            onClick={() => { resetAll(); setActiveCategory("appType"); }}
             style={{
               display: "flex",
               alignItems: "center",

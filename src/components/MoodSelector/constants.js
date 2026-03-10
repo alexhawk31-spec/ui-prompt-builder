@@ -1,5 +1,5 @@
-// ── Mood Presets v4 ──
-// 8 dramatically different archetypes, each with a visual config for the mini-preview
+// ── Mood Presets v5 ──
+// 12 dramatically different archetypes, each with a visual config for the mini-preview
 
 export const MOOD_PRESETS = [
   {
@@ -12,7 +12,7 @@ export const MOOD_PRESETS = [
     interaction: "smooth",
     embellishment: "minimal",
     promptText:
-      "Professional, restrained design. Clean sans-serif, balanced whitespace, muted palette with one accent color. No gradients or glow. Enterprise-ready.",
+      'mood-feel: "boardroom" — clean nav with bold logo left and muted links right, thin horizontal rule divider, three equal stat cards large bold values and muted uppercase labels, footer with filled solid button and muted metadata. Typography: geometric sans weight 800 for values and headings. Density: generous 20–24px padding, breathing room between every element. Interaction: smooth 200ms ease, subtle hover lift on cards. Embellishment: single-pixel borders only, no shadows, no radius on buttons — structure carries the weight.',
     v: {
       bg: "#0f1219", card: "#181c27", accent: "#6366f1", text: "#e2e0db",
       muted: "rgba(226,224,219,0.3)", dimmer: "rgba(226,224,219,0.15)",
@@ -37,7 +37,7 @@ export const MOOD_PRESETS = [
     interaction: "snappy",
     embellishment: "none",
     promptText:
-      "Dense, monospace-driven interface. JetBrains Mono everywhere, tight 4-6px spacing, no border-radius, uppercase labels with wide letter-spacing. Terminal aesthetic.",
+      'mood-feel: "hack-mode" — monospace top bar with live indicator, tight data cells no border-radius, micro uppercase labels wide letter-spacing, large monospace values, small deltas, mini bar chart in bordered container, tag pills at bottom active one in accent color. Typography: JetBrains Mono everywhere, uppercase labels, code-like precision. Density: maximum — 4–6px gaps, 8–10px padding, every pixel earns its place. Interaction: instant 100ms snappy response, no scale, no glow. Embellishment: zero decoration, flat surfaces, 1px borders only.',
     v: {
       bg: "#0a0a0a", card: "#111111", accent: "#22c55e", text: "#a3a3a3",
       muted: "rgba(163,163,163,0.4)", dimmer: "rgba(163,163,163,0.15)",
@@ -62,7 +62,7 @@ export const MOOD_PRESETS = [
     interaction: "smooth",
     embellishment: "moderate",
     promptText:
-      "Editorial, magazine-quality design. Georgia or serif headlines (italic), generous padding 20px+, 2-column layouts where appropriate, elegant dividers. Content-first, typography-driven.",
+      'mood-feel: "front-page" — serif brand name left and muted date right with 2px bottom rule, two-column grid left 60% right 40%, left column uppercase muted tag + bold serif headline + small body copy, right column thin left border with faded large numbers and bold titles stacked. Typography: editorial serif for headlines and brand, italic for subheadings, light weight for body. Density: spacious 18–22px padding, loose line-height 1.6–1.7. Interaction: smooth 250ms ease, gentle underline on hover links. Embellishment: hairline rules only, no shadows, no radius.',
     v: {
       bg: "#faf8f4", card: "#ffffff", accent: "#1a1a2e", text: "#1a1a2e",
       muted: "rgba(26,26,46,0.45)", dimmer: "rgba(26,26,46,0.12)",
@@ -87,7 +87,7 @@ export const MOOD_PRESETS = [
     interaction: "dramatic",
     embellishment: "rich",
     promptText:
-      "Playful, energetic design. Rounded font (Nunito 800), 16-20px border-radius, bouncy hover animations with scale(1.06), vibrant gradients, glassmorphism cards, progress indicators.",
+      'mood-feel: "arcade" — radial accent glow upper corner, bold rounded logo, accent pill badge, two equal cards border-radius 14px with large bold values, uppercase labels, positive delta below each, full-width accent pill button bottom. Typography: rounded heavy sans weight 900 for values, 700 for labels, all caps for metadata. Density: comfortable 16px padding, generous card spacing. Interaction: bouncy 150ms ease-out, scale(1.04) on hover, satisfying press feel. Embellishment: gradient fills, soft card glow, rounded everything 12–18px throughout.',
     v: {
       bg: "#120b20", card: "rgba(255,255,255,0.05)", accent: "#e879f9", text: "#f5f0ff",
       muted: "rgba(245,240,255,0.4)", dimmer: "rgba(245,240,255,0.15)",
@@ -112,7 +112,7 @@ export const MOOD_PRESETS = [
     interaction: "snappy",
     embellishment: "minimal",
     promptText:
-      "Operations/monitoring density. JetBrains Mono, 3-5px spacing, status indicators, amber/red alert colors, multi-panel grid layout. Designed for information overload.",
+      'mood-feel: "war-room" — compact monospace top bar with blinking alert indicator, 4-cell data grid with micro uppercase labels and large monospace values in contextual status tones, mini bar chart with color-coded bars, status tags bottom. Typography: monospace only, 5–7px labels, 13–16px values, no decorative type anywhere. Density: extreme — 3–5px gaps, 5–8px padding, nothing wasted. Interaction: instant 80ms response, no animations, functional only. Embellishment: none — flat dark surfaces, 1px borders, status tones carry all meaning.',
     v: {
       bg: "#050a12", card: "#0a1020", accent: "#f59e0b", text: "#94a3b8",
       muted: "rgba(148,163,184,0.4)", dimmer: "rgba(148,163,184,0.15)",
@@ -137,7 +137,7 @@ export const MOOD_PRESETS = [
     interaction: "subtle",
     embellishment: "none",
     promptText:
-      "Brutalist design. Zero border-radius, zero box-shadow, hard 2px borders, stark contrast. Heavy uppercase typography, aggressive spacing. Anti-decoration as the aesthetic.",
+      'mood-feel: "raw-cut" — bold uppercase heading top-left, monospace metadata top-right, heavy full-width rule below header, three stat columns with thin vertical borders, large bold values and monospace uppercase labels, footer with filled solid button and monospace string. Typography: heavy geometric sans for headings, monospace for all labels and metadata. Density: medium-tight 14–16px padding. Interaction: no transitions, no hover states — brutalist intentionality. Embellishment: zero — no radius, no shadows, no gradients, hard edges only.',
     v: {
       bg: "#f0f0f0", card: "#ffffff", accent: "#000000", text: "#000000",
       muted: "rgba(0,0,0,0.4)", dimmer: "rgba(0,0,0,0.1)",
@@ -162,7 +162,7 @@ export const MOOD_PRESETS = [
     interaction: "smooth",
     embellishment: "rich",
     promptText:
-      "Glassmorphism design. Frosted translucent cards with backdrop-filter blur(20px), layered depth with subtle gradients, soft accent glow (box-shadow with color), rounded 14-18px radius.",
+      'mood-feel: "vapor" — dual radial ambient gradients from accent colors at 6–8% opacity over the background, frosted glass cards rgba white 0.04 with border rgba white 0.08 border-radius 12px, large values with muted labels, gradient fill progress bar, glowing dot live indicator. Typography: modern geometric sans weight 700 for values, 400 for labels. Density: comfortable 16px padding, 8–10px gaps. Interaction: smooth 200ms ease, subtle glow on hover, gentle scale(1.02). Embellishment: frosted glass throughout, ambient gradient overlay, soft glow on accent elements.',
     v: {
       bg: "#0c0f1a", card: "rgba(255,255,255,0.04)", accent: "#67e8f9", text: "#e0f2fe",
       muted: "rgba(224,242,254,0.35)", dimmer: "rgba(224,242,254,0.12)",
@@ -187,7 +187,7 @@ export const MOOD_PRESETS = [
     interaction: "smooth",
     embellishment: "moderate",
     promptText:
-      "Premium dark design. Near-black backgrounds (#08090d), warm gold accent (#d4a254), subtle gold-tinted borders, refined spacing. Luxury fintech or private portal feel.",
+      'mood-feel: "midnight-luxe" — thin accent gradient crown line top of page, italic serif logo left, glowing accent dot live indicator right, accent gradient horizontal rule, three stat columns with accent-tinted borders, italic serif values, two buttons outlined and filled in accent. Typography: italic serif for logo and values, uppercase letter-spaced sans for labels — restrained and deliberate. Density: 16–18px padding, intentional breathing room. Interaction: smooth 300ms ease, subtle accent glow on hover. Embellishment: hairline accent accents only, no gradients on surfaces, no radius — pure refined darkness.',
     v: {
       bg: "#08090d", card: "#12141c", accent: "#d4a254", text: "#e8e4dc",
       muted: "rgba(232,228,220,0.35)", dimmer: "rgba(232,228,220,0.12)",
@@ -200,6 +200,106 @@ export const MOOD_PRESETS = [
       glass: false, glow: false, brutalist: false, light: false,
       headText: "Portfolio", chartLabel: "Returns",
       barAccentStart: 11, titleDecor: "", statSet: "luxe",
+    },
+  },
+  {
+    id: "softpaper",
+    name: "Soft Paper",
+    tagline: "Warm. Rounded. Touchable.",
+    icon: "circle",
+    density: "spacious",
+    typography: "rounded",
+    interaction: "smooth",
+    embellishment: "moderate",
+    promptText:
+      'mood-feel: "soft-paper" — muted neutral background, surface cards border-radius 16px with soft box-shadow, large bold values in accent colors, small muted bold labels, full-width rounded pill button. Typography: rounded heavy sans weight 900 for values and logo, 700 for labels — friendly throughout. Density: spacious 18–22px padding, generous internal card padding. Interaction: bouncy 180ms ease-out, scale(1.03) on hover, shadow deepens on press. Embellishment: soft shadows throughout, generous radius 12–18px everywhere, no hard edges.',
+    v: {
+      bg: "#faf8f5", card: "#ffffff", accent: "#6366f1", text: "#1e1b2e",
+      muted: "rgba(30,27,46,0.4)", dimmer: "rgba(30,27,46,0.12)",
+      radius: 16, font: "'Nunito', sans-serif", headSize: 12, headWeight: 800,
+      valSize: 18, valWeight: 900, valFont: "'Nunito', sans-serif",
+      labelSize: 6, labelCase: "normal", labelSpacing: "0.02em",
+      cardPad: 12, gap: 10, cardCount: 3, barCount: 10, barGap: 3,
+      showNav: false, showTabs: true, tabStyle: "pill",
+      border: "1px solid rgba(0,0,0,0.06)", shadow: "0 2px 12px rgba(0,0,0,0.06)",
+      glass: false, glow: false, brutalist: false, light: true,
+      headText: "Dashboard", chartLabel: "Activity",
+      barAccentStart: 7, titleDecor: "", statSet: "default",
+    },
+  },
+  {
+    id: "signal",
+    name: "Signal",
+    tagline: "Clean. Status-driven. Functional.",
+    icon: "bell",
+    density: "balanced",
+    typography: "clean",
+    interaction: "smooth",
+    embellishment: "minimal",
+    promptText:
+      'mood-feel: "signal" — bold logo left, small rounded badge right, tinted alert block with dot indicator bold heading and muted description, three surface stat cards with status-toned values, filled primary button and ghost secondary button. Typography: clean humanist sans weight 800 for values, 600 for labels, 500 for body. Density: balanced 14–16px padding, clear hierarchy. Interaction: smooth 150ms ease, border color shifts on hover, buttons depress on click. Embellishment: minimal — 7–8px radius on cards and buttons, 1px borders, status tone is the only decoration.',
+    v: {
+      bg: "#fafafa", card: "#ffffff", accent: "#3b82f6", text: "#111827",
+      muted: "rgba(17,24,39,0.45)", dimmer: "rgba(17,24,39,0.1)",
+      radius: 8, font: "'DM Sans', sans-serif", headSize: 12, headWeight: 700,
+      valSize: 17, valWeight: 800, valFont: "'DM Sans', sans-serif",
+      labelSize: 6, labelCase: "uppercase", labelSpacing: "0.06em",
+      cardPad: 10, gap: 8, cardCount: 3, barCount: 12, barGap: 3,
+      showNav: false, showTabs: true, tabStyle: "pill",
+      border: "1px solid rgba(0,0,0,0.08)", shadow: "0 1px 3px rgba(0,0,0,0.05)",
+      glass: false, glow: false, brutalist: false, light: true,
+      headText: "Alerts", chartLabel: "Response Time",
+      barAccentStart: 9, titleDecor: "", statSet: "default",
+    },
+  },
+  {
+    id: "notebook",
+    name: "Notebook",
+    tagline: "Ruled paper. Serif notes. Handcrafted.",
+    icon: "edit",
+    density: "balanced",
+    typography: "editorial",
+    interaction: "subtle",
+    embellishment: "moderate",
+    promptText:
+      'mood-feel: "notebook" — muted paper-toned background with repeating horizontal rules every 24px at low opacity, serif logo left and monospace date right, italic serif section title with thin bottom rule, bulleted list small dot bullets with bold key terms in body text, italic serif footnote with thin top border. Typography: editorial serif italic for titles and logo, monospace for dates and metadata. Density: comfortable 14–16px padding, line-ruled structure provides rhythm. Interaction: no hover states — static document feel. Embellishment: ruled lines only, no shadows, no radius, no fills.',
+    v: {
+      bg: "#f5f0e6", card: "transparent", accent: "#8b5e3c", text: "#2c2418",
+      muted: "rgba(44,36,24,0.4)", dimmer: "rgba(44,36,24,0.1)",
+      radius: 0, font: "Georgia, serif", headSize: 14, headWeight: 400,
+      valSize: 18, valWeight: 400, valFont: "Georgia, serif",
+      labelSize: 6, labelCase: "normal", labelSpacing: "0.02em",
+      cardPad: 10, gap: 8, cardCount: 3, barCount: 10, barGap: 4,
+      showNav: false, showTabs: false, tabStyle: "none",
+      border: "1px solid rgba(44,36,24,0.12)", shadow: "none",
+      glass: false, glow: false, brutalist: false, light: true,
+      headText: "Field Notes", chartLabel: "Observations",
+      barAccentStart: 7, titleDecor: "italic", statSet: "editorial",
+    },
+  },
+  {
+    id: "neongrid",
+    name: "Neon Grid",
+    tagline: "Glowing lines. Grid energy. Electric.",
+    icon: "grid",
+    density: "compact",
+    typography: "technical",
+    interaction: "snappy",
+    embellishment: "rich",
+    promptText:
+      'mood-feel: "neon-grid" — subtle line-grid pattern overlay at very low opacity, monospace logo with text-shadow glow, bordered monospace status indicator, three stat cells thin tinted borders with large monospace values in distinct accent tones with text-shadow glow, two horizontal bar indicators with glowing gradient fills. Typography: monospace exclusively, uppercase for all labels, wide letter-spacing, glow on key values. Density: compact 10–14px padding, tight gaps. Interaction: instant 100ms snap, glow intensifies on hover, no scale. Embellishment: text-shadow glow on accent values, grid overlay, glowing gradient bar fills, no border-radius anywhere.',
+    v: {
+      bg: "#0a0a0f", card: "#111118", accent: "#22d3ee", text: "#e0f2fe",
+      muted: "rgba(224,242,254,0.35)", dimmer: "rgba(224,242,254,0.12)",
+      radius: 0, font: "'JetBrains Mono', monospace", headSize: 10, headWeight: 600,
+      valSize: 15, valWeight: 600, valFont: "'JetBrains Mono', monospace",
+      labelSize: 5, labelCase: "uppercase", labelSpacing: "0.12em",
+      cardPad: 7, gap: 5, cardCount: 3, barCount: 20, barGap: 2,
+      showNav: false, showTabs: false, tabStyle: "none",
+      border: "1px solid rgba(34,211,238,0.15)", shadow: "none",
+      glass: false, glow: true, brutalist: false, light: false,
+      headText: "GRID_CTL", chartLabel: "SIGNAL [Hz]",
+      barAccentStart: 16, titleDecor: "", statSet: "terminal",
     },
   },
 ];

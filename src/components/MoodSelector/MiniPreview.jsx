@@ -43,17 +43,27 @@ const STAT_SETS = {
   ],
 };
 
-export default function MiniPreview({ v }) {
+export default function MiniPreview({ v, palette }) {
   const {
-    bg, card, accent, text, muted, dimmer, radius, font,
+    radius, font,
     headSize, headWeight, valSize, valWeight, valFont,
     labelSize, labelCase, labelSpacing,
     cardPad, gap, cardCount, barCount, barGap,
     showNav, showTabs, tabStyle,
-    border, shadow, glass, glow, brutalist, light,
+    shadow, glass, glow, brutalist,
     headText, chartLabel, barAccentStart, titleDecor,
     statSet,
   } = v;
+
+  // Use palette colors when available, fall back to preset's own colors
+  const bg = palette?.bg || v.bg;
+  const card = palette?.card || v.card;
+  const accent = palette?.accent || v.accent;
+  const text = palette?.text || v.text;
+  const muted = palette?.muted || v.muted;
+  const dimmer = palette?.dim || v.dimmer;
+  const light = palette ? palette.bg === "#ffffff" || palette.bg?.startsWith("#f") : v.light;
+  const border = palette ? `1px solid ${palette.border}` : v.border;
 
   const stats = (STAT_SETS[statSet] || STAT_SETS.default).slice(0, cardCount);
 

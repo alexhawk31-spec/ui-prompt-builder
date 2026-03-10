@@ -24,8 +24,8 @@ const usePromptStore = create((set, get) => ({
   // Intro / landing page
   showIntro: true,
   dismissIntro: () => {
-    set({ showIntro: false, onboarded: true });
-    window.location.hash = get().activeCategory;
+    set({ showIntro: false, onboarded: true, activeCategory: "appType" });
+    window.location.hash = "appType";
   },
 
   // Onboarding
@@ -70,6 +70,7 @@ const usePromptStore = create((set, get) => ({
         moodPreset: null,
         moodDimensions: null,
         moodCustom: false,
+        slideLayouts: null,
         cardStyle: null,
         navStyle: null,
         navSelections: null,
@@ -91,8 +92,26 @@ const usePromptStore = create((set, get) => ({
   setBuildMode: (mode) => set({ buildMode: mode }),
   setAppStarterEnabled: (val) => set({ appStarterEnabled: val }),
 
+  // Slide layouts (Presentation only) — multi-select
+  slideLayouts: null, // string[] — selected layout IDs
+  hoveredSlideLayout: null, // string — transient, for live preview
+
+  setSlideLayouts: (selections) => {
+    set({ slideLayouts: selections });
+    if (selections && selections.length > 0) {
+      get().autoInclude("layouts");
+    }
+  },
+  setHoveredSlideLayout: (id) => set({ hoveredSlideLayout: id }),
+  clearSlideLayouts: () =>
+    set((state) => ({
+      slideLayouts: null,
+      configuredSections: state.configuredSections.filter((id) => id !== "layouts"),
+    })),
+
   // Multi-select navigation for Presentation & One Pager
   navSelections: null, // string[] — selected nav option IDs
+  hoveredNavSelection: null, // string — transient, for live preview
 
   setNavSelections: (selections) => {
     set({ navSelections: selections });
@@ -100,6 +119,7 @@ const usePromptStore = create((set, get) => ({
       get().autoInclude("navigation");
     }
   },
+  setHoveredNavSelection: (id) => set({ hoveredNavSelection: id }),
   clearNavSelections: () =>
     set((state) => ({
       navSelections: null,
@@ -359,6 +379,10 @@ const usePromptStore = create((set, get) => ({
     get().autoInclude("data");
   },
 
+  // Animation
+  hoveredAnimation: null, // string — transient, for live preview
+  setHoveredAnimation: (id) => set({ hoveredAnimation: id }),
+
   // Simple setters (with auto-include)
   setAnimation: (val) => {
     set({ animation: val });
@@ -424,6 +448,7 @@ const usePromptStore = create((set, get) => ({
       moodPreset: null,
       moodDimensions: null,
       moodCustom: false,
+      slideLayouts: null,
       cardStyle: null,
       navStyle: null,
       navSelections: null,
@@ -454,6 +479,7 @@ const usePromptStore = create((set, get) => ({
       theme: "theme",
       moodPreset: "mood",
       moodDimensions: "mood",
+      slideLayouts: "layouts",
       cardStyle: "cards",
       navStyle: "navigation",
       buttonStyle: "buttons",
@@ -480,6 +506,7 @@ const usePromptStore = create((set, get) => ({
       moodPreset: cfg.moodPreset || null,
       moodDimensions: cfg.moodDimensions || null,
       moodCustom: false,
+      slideLayouts: cfg.slideLayouts || null,
       cardStyle: cfg.cardStyle || null,
       navStyle: cfg.navStyle || null,
       navSelections: cfg.navSelections || null,
@@ -500,6 +527,7 @@ const usePromptStore = create((set, get) => ({
       customColors: s.customColors,
       moodPreset: s.moodPreset,
       moodDimensions: s.moodDimensions,
+      slideLayouts: s.slideLayouts,
       cardStyle: s.cardStyle,
       navStyle: s.navStyle,
       buttonStyle: s.buttonStyle,

@@ -5,6 +5,7 @@ import { CARD_STYLES, CARD_FINE_TUNE_DIMS, CARD_PROMPT_MAP } from "../components
 import { NAV_PATTERNS, NAV_FINE_TUNE_DIMS, NAV_PROMPT_MAP } from "../components/NavigationSelector/constants";
 import { BTN_STYLES, BTN_FINE_TUNE_DIMS, BTN_PROMPT_MAP } from "../components/ButtonSelector/constants";
 import { DATA_STYLES, DATA_FINE_TUNE_DIMS, DATA_PROMPT_MAP } from "../components/DataDisplaySelector/constants";
+import { SLIDE_LAYOUT_PROMPT_MAP } from "../components/SlideLayoutSelector/constants";
 import {
   PRESENTATION_CARD_PROMPT_MAP,
   ONE_PAGER_CARD_PROMPT_MAP,
@@ -20,7 +21,7 @@ import {
  * Returns empty string if that category isn't configured.
  */
 export function generateCategorySnippet(config, categoryId) {
-  const { configuredSections = [], selectedPurpose, theme, customAccents, customColors, modeFilter, moodPreset, moodDimensions, moodCustom, cardStyle, dataStyle, navStyle, navSelections, buttonStyle, animation, faviconDesc, outputType, outputPurpose, buildMode, appStarterEnabled } = config;
+  const { configuredSections = [], selectedPurpose, theme, customAccents, customColors, modeFilter, moodPreset, moodDimensions, moodCustom, slideLayouts, cardStyle, dataStyle, navStyle, navSelections, buttonStyle, animation, faviconDesc, outputType, outputPurpose, buildMode, appStarterEnabled } = config;
 
   // If configuredSections is populated, only include sections that are toggled on
   if (configuredSections.length > 0 && !configuredSections.includes(categoryId)) return "";
@@ -61,12 +62,16 @@ export function generateCategorySnippet(config, categoryId) {
       s += `- Embellishment: ${MOOD_PROMPT_MAP.embellishment[moodDimensions.embellishment]}\n`;
       return s;
     }
+    case "layouts": {
+      if (!slideLayouts || slideLayouts.length === 0) return "";
+      let s = `## Slide Layouts\nInclude the following slide types in this deck. Choose which content goes on which slide type based on the material provided:\n`;
+      for (const id of slideLayouts) {
+        if (SLIDE_LAYOUT_PROMPT_MAP[id]) s += `${SLIDE_LAYOUT_PROMPT_MAP[id]}\n`;
+      }
+      return s;
+    }
     case "cards": {
       if (!cardStyle) return "";
-      // Presentation / One Pager: multi-select mode
-      if (outputType === "presentation" || outputType === "one-pager") {
-        return _generateModeCards(outputType, cardStyle);
-      }
       const style = CARD_STYLES.find((s) => s.id === cardStyle.styleId);
       if (!style) return "";
       let s = `## Card Style — ${style.label}\n${style.basePrompt}\n`;
@@ -155,9 +160,9 @@ function _generateTechnicalBlock(config) {
     s += `- Output: Return only raw HTML starting with <!DOCTYPE html>. No explanation, no markdown.\n`;
     s += `- Print: Include @media print styles so the deck works when saved as PDF.\n`;
     if (buildMode === "new-build") {
-      s += `- Content: I will provide content after this prompt. Turn it into a complete deck — one idea per slide, 5-10 slides depending on content.\n`;
+      s += `- Content: Turn the content I give you into a complete deck — one idea per slide, 5-10 slides depending on content.\n`;
     } else {
-      s += `- Content: I will provide my existing content after this prompt. Redesign it — do not change the substance.\n`;
+      s += `- Content: Keep all existing content intact — redesign the visuals, not the substance.\n`;
     }
   } else if (outputType === "one-pager") {
     s += `- Format: Single self-contained HTML file — all CSS and JS inline. No external dependencies.\n`;
@@ -166,9 +171,9 @@ function _generateTechnicalBlock(config) {
     s += `- Print: Include @media print styles so it works when saved as PDF.\n`;
     s += `- Density: Condensed. If content is short, keep it tight — do not pad or stretch. Every element should earn its space.\n`;
     if (buildMode === "new-build") {
-      s += `- Content: I will provide content after this prompt. Turn it into a polished one-pager.\n`;
+      s += `- Content: Turn the content I give you into a polished one-pager.\n`;
     } else {
-      s += `- Content: I will provide my existing content after this prompt.\n`;
+      s += `- Content: Keep all existing content intact — redesign the layout and visuals, not the substance.\n`;
     }
   }
 
@@ -267,17 +272,17 @@ export function generatePrompt(config) {
     }
   } else if (outputType === "presentation") {
     if (buildMode === "new-build") {
-      p += `Create a single self-contained HTML file that presents the content I provide as a slide deck. Design it as a senior frontend engineer would — polished, production-quality, with real attention to visual detail.\n\n`;
+      p += `I want to create a presentation. Respond to me with: "Love what you've designed with Pintuck! Paste in your content, notes, or outline — or just describe what you want to cover — and I'll take the look and feel you've crafted and build it." Once I respond, create a single self-contained HTML file as a polished slide deck. Design it as a senior frontend engineer would — production-quality, with real attention to visual detail.\n\n`;
     } else {
-      p += `I have an existing presentation. Keep my content but apply the following design direction — update the look, feel, and structure. Design it as a senior frontend engineer would.\n\n`;
+      p += `I want to upgrade the look and feel of the presentation we've been building together. Apply the design direction below to create a polished slide deck — keep all the content but redesign the visuals, layout, and structure to match. Each slide should be full viewport (100vw x 100vh), with clear visual hierarchy and professional typography. Design it as a senior frontend engineer would — production-quality, with real attention to visual detail.\n\n`;
     }
     p += _generateTechnicalBlock(config);
     p += `\n`;
   } else if (outputType === "one-pager") {
     if (buildMode === "new-build") {
-      p += `Create a single self-contained HTML file as a polished one-page document. Design it as a senior frontend engineer would — clean, professional, with real attention to visual detail.\n\n`;
+      p += `I want to create a one-pager. Respond to me with: "Love what you've designed with Pintuck! Paste in your content, notes, or key points — or just describe what you need — and I'll take the look and feel you've crafted and build it." Once I respond, create a single self-contained HTML file as a polished one-pager. Design it as a senior frontend engineer would — clean, professional, with real attention to visual detail.\n\n`;
     } else {
-      p += `I have existing content. Redesign the layout and apply the following design direction. Keep content intact. Design it as a senior frontend engineer would.\n\n`;
+      p += `I want to upgrade the look and feel of the one-pager we've been building together. Apply the design direction below to create a polished, scannable single-page document — keep all the content but redesign the layout, typography, and visuals to match. Every element should earn its space. Design it as a senior frontend engineer would — clean, professional, with real attention to visual detail.\n\n`;
     }
     p += _generateTechnicalBlock(config);
     p += `\n`;
@@ -318,12 +323,21 @@ export function generatePrompt(config) {
     p += `\n`;
   }
 
-  // ── Cards / Slide Types / Content Blocks ──
+  // ── Slide Layouts (Presentation only) ──
+  if (config.slideLayouts?.length > 0 && included("layouts")) {
+    p += `## Slide Layouts\nInclude the following slide types in this deck. Choose which content goes on which slide type based on the material provided:\n`;
+    for (const id of config.slideLayouts) {
+      if (SLIDE_LAYOUT_PROMPT_MAP[id]) p += `${SLIDE_LAYOUT_PROMPT_MAP[id]}\n`;
+    }
+    p += `\n`;
+  }
+
+  // ── Cards (App / One Pager) ──
   if (cardStyle && included("cards")) {
-    if (outputType === "presentation" || outputType === "one-pager") {
+    if (outputType === "one-pager") {
       const snippet = _generateModeCards(outputType, cardStyle);
       if (snippet) p += snippet + `\n`;
-    } else {
+    } else if (!outputType || outputType === "app") {
       const style = CARD_STYLES.find((cs) => cs.id === cardStyle.styleId);
       if (style) {
         p += `## Card Style — ${style.label}\n`;

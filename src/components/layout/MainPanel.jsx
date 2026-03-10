@@ -8,6 +8,7 @@ import { generateCategorySnippet } from "../../utils/generatePrompt";
 import ThemeSelector from "../ThemeSelector";
 import ProjectPicker from "../ProjectPicker";
 import MoodSelector from "../MoodSelector";
+import SlideLayoutSelector from "../SlideLayoutSelector";
 import CardStyleSelector from "../ComponentStyleSelector";
 import NavigationSelector from "../NavigationSelector";
 import ButtonSelector from "../ButtonSelector";
@@ -21,6 +22,7 @@ const PANEL_COMPONENTS = {
   appType: ProjectPicker,
   theme: ThemeSelector,
   mood: MoodSelector,
+  layouts: SlideLayoutSelector,
   cards: CardStyleSelector,
   data: DataDisplaySelector,
   navigation: NavigationSelector,
@@ -34,6 +36,7 @@ const CLEAR_ACTIONS = {
   appType: "clearAppType",
   theme: "clearTheme",
   mood: "clearMood",
+  layouts: "clearSlideLayouts",
   cards: "clearCardStyle",
   navigation: "clearNavStyle",
   buttons: "clearButtonStyle",
@@ -179,7 +182,7 @@ export default function MainPanel() {
           </div>
 
           {/* Right: Copy + Reset (only when section has data, hidden for prompt panel) */}
-          {hasData && activeCategory !== "prompt" && (
+          {hasData && activeCategory !== "prompt" && activeCategory !== "appType" && (
             <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
               <button
                 onClick={handleCopy}

@@ -9,6 +9,15 @@ export default function PreviewBackOffice({ p, mood, cardCSS, buttonCSS, dataCSS
   const hWt = m.headWeight || 700;
   const cShadow = m.cardShadow || "none";
   const tr = m.transition || "all 0.2s";
+  const lblTx = m.labelTransform || "uppercase";
+  const lblSp = m.labelSpacing || "0.04em";
+  const hIt = m.headItalic;
+  const glass = m.glassCard;
+  const glow = m.accentGlow;
+  const gAlpha = m.glassAlpha || "ff";
+  const gBlur = m.glassBlur || 0;
+  const glowSz = m.glowSize || 0;
+  const bdrW = m.borderWeight ?? 1;
   const cs = cardCSS || {};
   const { extra: cExtra, ...cBase } = cs;
   const bs = buttonCSS || {};
@@ -16,10 +25,15 @@ export default function PreviewBackOffice({ p, mood, cardCSS, buttonCSS, dataCSS
   const btnS = bs.secondary || {};
   const ds = dataCSS || {};
 
+  const cardBg = glass ? `${p.card}${gAlpha}` : p.card;
+  const cardBlur = glass ? { backdropFilter: `blur(${gBlur}px)`, WebkitBackdropFilter: `blur(${gBlur}px)` } : {};
+  const cardBorder = bdrW === 0 ? "none" : `${bdrW}px solid ${p.border}`;
+  const accentShadow = glow ? `0 0 ${glowSz}px ${p.accent}40` : undefined;
+
   return (
     <div style={{ height: "100%", display: "flex", background: p.bg, fontFamily: bFont }}>
       {/* Sidebar */}
-      <div style={{ width: 60, background: p.card, borderRight: `1px solid ${p.border}`, padding: `${pad}px 0`, display: "flex", flexDirection: "column", alignItems: "center", gap: gap * 1.5 }}>
+      <div style={{ width: 60, background: cardBg, borderRight: cardBorder, padding: `${pad}px 0`, display: "flex", flexDirection: "column", alignItems: "center", gap: gap * 1.5, ...cardBlur }}>
         <div style={{ width: 24, height: 24, borderRadius: cRad, background: p.accent, display: "flex", alignItems: "center", justifyContent: "center", fontSize: fs(10), fontWeight: 700, color: "#fff" }}>A</div>
         {["▪", "◆", "●", "▸", "☰"].map((icon, i) => (
           <div key={i} style={{ width: 28, height: 28, borderRadius: cRad, background: i === 0 ? p.accentBg : "transparent", display: "flex", alignItems: "center", justifyContent: "center", fontSize: fs(10), color: i === 0 ? p.accent : p.dim, transition: tr }}>{icon}</div>
@@ -30,11 +44,11 @@ export default function PreviewBackOffice({ p, mood, cardCSS, buttonCSS, dataCSS
       <div style={{ flex: 1, display: "flex", flexDirection: "column", padding: pad, gap, overflow: "hidden" }}>
         {/* Top bar */}
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-          <div style={{ fontSize: fs(14), fontWeight: hWt, fontFamily: hFont, color: p.text }}>Users</div>
+          <div style={{ fontSize: fs(14), fontWeight: hWt, fontFamily: hFont, color: p.text, fontStyle: hIt ? "italic" : "normal" }}>Users</div>
           <div style={{ display: "flex", gap: 4 }}>
             <div style={{ padding: "4px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Import</div>
             <div style={{ padding: "4px 10px", borderRadius: cRad, background: p.surface, border: `1px solid ${p.border}`, fontSize: fs(8), fontWeight: 600, color: p.muted, transition: tr, ...btnS }}>Export</div>
-            <div style={{ padding: "4px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, ...btnP }}>+ Add User</div>
+            <div style={{ padding: "4px 10px", borderRadius: cRad, background: p.accent, fontSize: fs(8), fontWeight: 700, color: "#fff", transition: tr, boxShadow: accentShadow, ...btnP }}>+ Add User</div>
           </div>
         </div>
 
@@ -45,8 +59,8 @@ export default function PreviewBackOffice({ p, mood, cardCSS, buttonCSS, dataCSS
             { l: "Active", v: "1,042", cl: p.green },
             { l: "Invited", v: "38", cl: p.amber },
           ].map((s) => (
-            <div key={s.l} style={{ borderRadius: cRad, padding: `${Math.round(gap)}px ${Math.round(gap * 1.5)}px`, background: p.card, border: `1px solid ${p.border}`, boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>
-              <div style={{ fontSize: fs(6), fontWeight: 600, textTransform: "uppercase", letterSpacing: ".04em", color: p.dim }}>{s.l}</div>
+            <div key={s.l} style={{ borderRadius: cRad, padding: `${Math.round(gap)}px ${Math.round(gap * 1.5)}px`, background: cardBg, border: cardBorder, boxShadow: cShadow, transition: tr, ...cardBlur, ...cBase, ...(cExtra || {}) }}>
+              <div style={{ fontSize: fs(6), fontWeight: 600, textTransform: lblTx, letterSpacing: lblSp, color: p.dim }}>{s.l}</div>
               <div style={{ fontSize: fs(13), fontWeight: hWt, fontFamily: hFont, color: s.cl, marginTop: 2 }}>{s.v}</div>
             </div>
           ))}
@@ -60,11 +74,11 @@ export default function PreviewBackOffice({ p, mood, cardCSS, buttonCSS, dataCSS
         </div>
 
         {/* Data table */}
-        <div style={{ flex: 1, borderRadius: cRad, background: p.card, border: `1px solid ${p.border}`, overflow: "hidden", boxShadow: cShadow, transition: tr, ...cBase, ...(cExtra || {}) }}>
+        <div style={{ flex: 1, borderRadius: cRad, background: cardBg, border: cardBorder, overflow: "hidden", boxShadow: cShadow, transition: tr, ...cardBlur, ...cBase, ...(cExtra || {}) }}>
           {/* Header */}
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 2.5fr 1.2fr 1fr 1fr", padding: ds.rowPad || "6px 10px", borderBottom: `1px solid ${p.border}`, background: p.surface, ...(ds.header || {}) }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 2.5fr 1.2fr 1fr 1fr", padding: ds.rowPad || "6px 10px", borderBottom: cardBorder, background: p.surface, ...(ds.header || {}) }}>
             {["", "Name", "Role", "Status", ""].map((h, i) => (
-              <div key={i} style={{ fontSize: fs(7), fontWeight: ds.header?.fontWeight || 700, textTransform: ds.header?.textTransform || "uppercase", letterSpacing: ds.header?.letterSpacing || ".04em", color: ds.header?.color || p.dim }}>{h}</div>
+              <div key={i} style={{ fontSize: fs(7), fontWeight: ds.header?.fontWeight || 700, textTransform: ds.header?.textTransform || lblTx, letterSpacing: ds.header?.letterSpacing || lblSp, color: ds.header?.color || p.dim }}>{h}</div>
             ))}
           </div>
           {/* Rows */}

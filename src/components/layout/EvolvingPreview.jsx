@@ -9,6 +9,7 @@ import { getCardStyleCSS } from "../../utils/cardStyleCSS";
 import { getButtonStyleCSS } from "../../utils/buttonStyleCSS";
 import { getDataStyleCSS } from "../../utils/dataStyleCSS";
 import NavIndicator from "../PurposeSelector/previews/NavIndicator";
+import { MOOD_PRESETS } from "../MoodSelector/constants";
 
 import PreviewLearn from "../PurposeSelector/previews/PreviewLearn";
 import PreviewData from "../PurposeSelector/previews/PreviewData";
@@ -19,9 +20,14 @@ import PreviewDiscover from "../PurposeSelector/previews/PreviewDiscover";
 import PreviewMission from "../PurposeSelector/previews/PreviewMission";
 import PreviewFreestyle from "../PurposeSelector/previews/PreviewFreestyle";
 import PreviewKeynote from "../PurposeSelector/previews/PreviewKeynote";
+import PreviewSlideLayout from "../SlideLayoutSelector/PreviewSlideLayout";
+import PreviewNavControls from "../NavigationSelector/PreviewNavControls";
+import PreviewAnimation from "../AnimationSelector/PreviewAnimation";
 import PreviewStorefront from "../PurposeSelector/previews/PreviewStorefront";
 import PreviewPortfolio from "../PurposeSelector/previews/PreviewPortfolio";
 import PreviewBackOffice from "../PurposeSelector/previews/PreviewBackOffice";
+import PreviewOnePagerBlocks from "../ComponentStyleSelector/PreviewOnePagerBlocks";
+import PreviewOnePagerData from "../DataDisplaySelector/PreviewOnePagerData";
 
 // Legacy map — keyed by old selectedPurpose IDs
 const PREVIEW_MAP = {
@@ -79,6 +85,13 @@ export default function EvolvingPreview() {
   const selectedPurpose = usePromptStore((s) => s.selectedPurpose);
   const outputType = usePromptStore((s) => s.outputType);
   const outputPurpose = usePromptStore((s) => s.outputPurpose);
+  const activeCategory = usePromptStore((s) => s.activeCategory);
+  const hoveredSlideLayout = usePromptStore((s) => s.hoveredSlideLayout);
+  const slideLayouts = usePromptStore((s) => s.slideLayouts);
+  const hoveredNavSelection = usePromptStore((s) => s.hoveredNavSelection);
+  const navSelections = usePromptStore((s) => s.navSelections);
+  const hoveredAnimation = usePromptStore((s) => s.hoveredAnimation);
+  const animationVal = usePromptStore((s) => s.animation);
   const previewMode = usePromptStore((s) => s.previewMode);
   const themeId = usePromptStore((s) => s.theme);
   const customAccents = usePromptStore((s) => s.customAccents);
@@ -89,6 +102,7 @@ export default function EvolvingPreview() {
   const navStyleState = usePromptStore((s) => s.navStyle);
   const dataStyleState = usePromptStore((s) => s.dataStyle);
   const animationSetting = usePromptStore((s) => s.animation);
+  const moodPresetId = usePromptStore((s) => s.moodPreset);
 
   const effectiveTheme = useMemo(() => {
     const base = THEMES.find((t) => t.id === themeId);
@@ -117,8 +131,28 @@ export default function EvolvingPreview() {
     return animTransition ? { ...base, transition: animTransition } : base;
   }, [mood, animationSetting]);
 
+  // Show slide layout preview when on layouts step and there's something to show
+  const showSlidePreview = activeCategory === "layouts" && outputType === "presentation" && (hoveredSlideLayout || slideLayouts?.length > 0);
+
+  // Show nav controls preview when on navigation step for presentation/one-pager
+  const showNavPreview = activeCategory === "navigation" && (outputType === "presentation" || outputType === "one-pager");
+
+  // Show animation preview when on animation step for presentation
+  const showAnimPreview = activeCategory === "animation" && outputType === "presentation";
+
+  // Show one-pager content blocks preview
+  const showOnePagerBlocksPreview = activeCategory === "cards" && outputType === "one-pager";
+
+  // Show one-pager data elements preview
+  const showOnePagerDataPreview = activeCategory === "data" && outputType === "one-pager";
+
   // Resolve which preview to show: new system takes priority over legacy
   const Preview = useMemo(() => {
+    if (showSlidePreview) return PreviewSlideLayout;
+    if (showNavPreview) return PreviewNavControls;
+    if (showAnimPreview) return PreviewAnimation;
+    if (showOnePagerBlocksPreview) return PreviewOnePagerBlocks;
+    if (showOnePagerDataPreview) return PreviewOnePagerData;
     if (outputType) {
       if (outputPurpose && PURPOSE_PREVIEW_MAP[outputPurpose]) {
         return PURPOSE_PREVIEW_MAP[outputPurpose];
@@ -127,10 +161,23 @@ export default function EvolvingPreview() {
     }
     // Legacy fallback
     return PREVIEW_MAP[selectedPurpose] || PreviewFreestyle;
-  }, [outputType, outputPurpose, selectedPurpose]);
+  }, [outputType, outputPurpose, selectedPurpose, showSlidePreview, showNavPreview, showAnimPreview, showOnePagerBlocksPreview, showOnePagerDataPreview]);
 
-  const previewKey = outputPurpose || outputType || selectedPurpose || "freestyle";
+  const previewKey = showSlidePreview
+    ? `slide-${hoveredSlideLayout || slideLayouts?.[slideLayouts.length - 1] || "default"}`
+    : showNavPreview
+      ? "nav-controls"
+      : showAnimPreview
+        ? `anim-${hoveredAnimation || animationVal || "default"}`
+        : showOnePagerBlocksPreview
+          ? `op-blocks-${cardStyleState?.styleId || "default"}`
+          : showOnePagerDataPreview
+            ? `op-data-${dataStyleState?.styleId || "default"}`
+            : (outputPurpose || outputType || selectedPurpose || "freestyle");
   const current = PROJECT_TYPES.find((pr) => pr.id === selectedPurpose);
+  const moodPresetName = moodPresetId
+    ? MOOD_PRESETS.find((m) => m.id === moodPresetId)?.name
+    : null;
   const titleLabel = outputType
     ? TYPE_LABELS[outputType] || "Preview"
     : current?.name || "Preview";
@@ -176,7 +223,7 @@ export default function EvolvingPreview() {
             color: "rgba(255,255,255,0.5)",
           }}
         >
-          {titleLabel} · {previewMode === "dark" ? "Dark" : "Light"}
+          {titleLabel}{moodPresetName ? ` · ${moodPresetName}` : ""} · {previewMode === "dark" ? "Dark" : "Light"}
         </span>
       </div>
 

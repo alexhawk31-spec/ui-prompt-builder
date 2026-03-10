@@ -2,12 +2,14 @@ import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 import usePromptStore from "../../store/usePromptStore";
 import { getShellColors } from "../../utils/shellColors";
-import { OUTPUT_TYPES, USAGE_TIPS } from "../../constants/outputTypes";
+import { OUTPUT_TYPES, USAGE_TIPS, PURPOSE_OPTIONS } from "../../constants/outputTypes";
 import Icon from "../shared/Icon";
 import NextStepButton from "../shared/NextStepButton";
 
 export default function ProjectPicker() {
   const outputType = usePromptStore((s) => s.outputType);
+  const outputPurpose = usePromptStore((s) => s.outputPurpose);
+  const setOutputPurpose = usePromptStore((s) => s.setOutputPurpose);
   const buildMode = usePromptStore((s) => s.buildMode);
   const appStarterEnabled = usePromptStore((s) => s.appStarterEnabled);
   const setOutputType = usePromptStore((s) => s.setOutputType);
@@ -16,11 +18,15 @@ export default function ProjectPicker() {
   const shellMode = usePromptStore((s) => s.shellMode);
   const c = getShellColors(shellMode === "light");
 
+  const configuredSections = usePromptStore((s) => s.configuredSections);
   const [pendingType, setPendingType] = useState(null);
+
+  // Only sections beyond the project type itself count as "real" config
+  const hasCustomizations = configuredSections.filter((s) => s !== "appType").length > 0;
 
   const handleTypeSelect = (typeId) => {
     if (outputType === typeId) return;
-    if (outputType && outputType !== typeId) {
+    if (outputType && hasCustomizations) {
       setPendingType(typeId);
       return;
     }
@@ -38,16 +44,6 @@ export default function ProjectPicker() {
 
   return (
     <>
-      {/* Header */}
-      <div style={{ marginBottom: 14 }}>
-        <div style={{ fontSize: 15, fontWeight: 700, color: c.text, marginBottom: 4 }}>
-          What are you building?
-        </div>
-        <div style={{ fontSize: 11, color: c.muted }}>
-          This shapes everything — which steps are available, what options appear, and how your prompt is structured.
-        </div>
-      </div>
-
       {/* Output Type Cards */}
       <div
         style={{
@@ -71,12 +67,12 @@ export default function ProjectPicker() {
                   borderRadius: tip ? "14px 14px 0 0" : 14,
                   border: active
                     ? `2px solid ${type.color}`
-                    : `1px solid ${c.panelBorder}`,
+                    : `1px solid ${type.color}25`,
                   background: active
-                    ? `${type.color}08`
+                    ? `${type.color}10`
                     : locked
                       ? `${c.dim}80`
-                      : c.dim,
+                      : `linear-gradient(135deg, ${type.color}08, ${c.dim})`,
                   cursor: locked ? "not-allowed" : "pointer",
                   fontFamily: "inherit",
                   textAlign: "left",
@@ -86,7 +82,7 @@ export default function ProjectPicker() {
                   transition: "all 0.2s",
                   position: "relative",
                   opacity: locked ? 0.4 : 1,
-                  boxShadow: active ? `0 4px 20px ${type.color}20` : "none",
+                  boxShadow: active ? `0 4px 20px ${type.color}20` : `0 1px 4px rgba(0,0,0,0.15)`,
                 }}
               >
                 <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
@@ -95,7 +91,7 @@ export default function ProjectPicker() {
                       width: 28,
                       height: 28,
                       borderRadius: 8,
-                      background: `${type.color}15`,
+                      background: `${type.color}20`,
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
@@ -109,7 +105,7 @@ export default function ProjectPicker() {
                       style={{
                         fontSize: 12,
                         fontWeight: 700,
-                        color: active ? c.text : c.muted,
+                        color: c.text,
                       }}
                     >
                       {type.label}
@@ -120,7 +116,6 @@ export default function ProjectPicker() {
                   style={{
                     fontSize: 10,
                     color: c.muted,
-                    opacity: 0.7,
                     lineHeight: 1.4,
                   }}
                 >
@@ -154,10 +149,10 @@ export default function ProjectPicker() {
                   style={{
                     padding: "8px 10px",
                     borderRadius: "0 0 14px 14px",
-                    background: `${type.color}06`,
+                    background: `${type.color}0a`,
                     border: active
                       ? `2px solid ${type.color}`
-                      : `1px solid ${c.panelBorder}`,
+                      : `1px solid ${type.color}25`,
                     borderTop: "none",
                   }}
                 >
@@ -339,7 +334,7 @@ export default function ProjectPicker() {
                         borderRadius: 10,
                         border: active
                           ? `2px solid ${opt.color}`
-                          : `1px solid ${c.panelBorder}`,
+                          : `1px solid ${opt.color}30`,
                         cursor: "pointer",
                         fontFamily: "inherit",
                         fontSize: 11,
@@ -348,13 +343,13 @@ export default function ProjectPicker() {
                         alignItems: "center",
                         justifyContent: "center",
                         gap: 6,
-                        background: active ? `${opt.color}15` : c.dim,
-                        color: active ? opt.color : c.muted,
+                        background: active ? `${opt.color}15` : `${opt.color}08`,
+                        color: active ? opt.color : c.text,
                         boxShadow: active ? `0 2px 12px ${opt.color}25` : "none",
                         transition: "all 0.15s",
                       }}
                     >
-                      <Icon name={opt.icon} size={13} color={active ? opt.color : c.muted} />
+                      <Icon name={opt.icon} size={13} color={active ? opt.color : opt.color + "90"} />
                       {opt.label}
                     </button>
                   );
@@ -428,6 +423,48 @@ export default function ProjectPicker() {
                 </button>
               </div>
             )}
+
+            {/* Purpose / Context selector */}
+            {(() => {
+              const purposes = PURPOSE_OPTIONS[outputType] || [];
+              const typeColor = OUTPUT_TYPES.find((t) => t.id === outputType)?.color || "#818cf8";
+              if (purposes.length === 0) return null;
+              return (
+                <div style={{ marginTop: 14 }}>
+                  <div style={{ fontSize: 11, fontWeight: 600, color: c.muted, marginBottom: 8 }}>
+                    What kind of {outputType === "app" ? "app" : outputType === "presentation" ? "presentation" : "page"}?
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: 6 }}>
+                    {purposes.map((purpose) => {
+                      const active = outputPurpose === purpose.id;
+                      return (
+                        <button
+                          key={purpose.id}
+                          onClick={() => setOutputPurpose(active ? null : purpose.id)}
+                          style={{
+                            padding: "6px 12px",
+                            borderRadius: 8,
+                            border: active ? `1.5px solid ${typeColor}` : `1px solid ${c.panelBorder}`,
+                            background: active ? `${typeColor}15` : "rgba(255,255,255,0.03)",
+                            cursor: "pointer",
+                            fontFamily: "inherit",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: 5,
+                            transition: "all 0.15s",
+                          }}
+                        >
+                          <Icon name={purpose.icon} size={11} color={active ? typeColor : c.muted} />
+                          <span style={{ fontSize: 10, fontWeight: active ? 700 : 500, color: active ? typeColor : c.muted }}>
+                            {purpose.label}
+                          </span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })()}
           </motion.div>
         )}
       </AnimatePresence>

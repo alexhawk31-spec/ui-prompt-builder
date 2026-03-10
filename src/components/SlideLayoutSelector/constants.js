@@ -1,0 +1,168 @@
+// ── Slide Layout Categories with expandable options ──
+
+export const SLIDE_LAYOUT_CATEGORIES = [
+  {
+    id: "title-slide",
+    label: "Title Slide",
+    desc: "The opening impression — headline, subtitle, minimal content.",
+    icon: "type",
+    color: "#818cf8",
+    options: [
+      { id: "title-minimal-centered", label: "Minimal Centered", desc: "Accent bar above a centered headline and subtitle. Nothing else." },
+      { id: "title-left-anchored", label: "Left Anchored", desc: "Vertical accent bar, eyebrow label, bold headline, metadata line." },
+      { id: "title-split-panel", label: "Split Panel", desc: "Accent gradient left panel with logo, dark right panel with headline." },
+      { id: "title-full-bleed-dark", label: "Full Bleed Dark", desc: "Near-black with accent glow, content bottom-anchored." },
+      { id: "title-headline-only", label: "Headline Only", desc: "One oversized headline, accent-colored key phrase. Nothing else." },
+      { id: "title-layered-card", label: "Layered Card", desc: "Frosted glass card on a textured background with headline inside." },
+    ],
+  },
+  {
+    id: "section-divider",
+    label: "Section Divider",
+    desc: "Full-screen breaks that split the deck into chapters.",
+    icon: "minus",
+    color: "#a78bfa",
+    options: [
+      { id: "divider-number-title", label: "Number + Title", desc: "Large faded section number, bold title below, accent underline." },
+      { id: "divider-full-accent", label: "Full Accent", desc: "Accent gradient background, centered label and bold white title." },
+      { id: "divider-horizontal-rule", label: "Horizontal Rule", desc: "Full-width lines above and below, accent label and title between." },
+      { id: "divider-left-bar", label: "Left Bar", desc: "Full-height accent bar on left, title and description beside it." },
+      { id: "divider-centered-minimal", label: "Centered Minimal", desc: "Accent circle icon, centered title, progress indicator below." },
+      { id: "divider-split-panel", label: "Split Panel", desc: "Two panels — faded number left, label and title right." },
+    ],
+  },
+  {
+    id: "chart-data",
+    label: "Chart / Data",
+    desc: "Data visualizations and charts as the focal point.",
+    icon: "barChart",
+    color: "#22c55e",
+    options: [
+      { id: "chart-bar", label: "Bar Chart", desc: "Vertical bars in accent color, category labels below." },
+      { id: "chart-line", label: "Line Chart", desc: "Accent line with gradient fill fading to transparent." },
+      { id: "chart-donut", label: "Donut Chart", desc: "Donut with percentage center, legend beside it." },
+      { id: "chart-stat-grid", label: "Stat Grid", desc: "2x2 metric cards with bold values in accent colors." },
+      { id: "chart-callout", label: "Chart + Callout", desc: "Bar chart left, stacked callout cards right." },
+      { id: "chart-table", label: "Comparison Table", desc: "Table with accent primary column vs competitor column." },
+      { id: "chart-progress", label: "Progress Bars", desc: "Horizontal bars with labels and percentage values." },
+      { id: "chart-before-after", label: "Before / After", desc: "Two cards — muted before, accent-highlighted after." },
+      { id: "chart-big-stat", label: "Single Big Stat", desc: "One massive accent number centered, nothing else." },
+    ],
+  },
+  {
+    id: "quote-highlight",
+    label: "Quote / Highlight",
+    desc: "Pull quotes, key statements, or standout moments.",
+    icon: "edit",
+    color: "#f472b6",
+    options: [
+      { id: "quote-big-mark", label: "Big Quote Mark", desc: "Oversized faded quote mark, centered italic text, attribution below." },
+      { id: "quote-accent-border", label: "Accent Left Border", desc: "Thick accent bar on left, italic text beside it." },
+      { id: "quote-full-accent", label: "Full Accent Background", desc: "Accent gradient fill, white italic text centered." },
+      { id: "quote-highlight-card", label: "Highlight Card", desc: "Surface card with eyebrow label, bold quote, attribution." },
+      { id: "quote-split", label: "Split Quote", desc: "Accent panel with speaker info, quote on the right." },
+      { id: "quote-oversized", label: "Oversized Statement", desc: "Large bold statement, one key phrase in accent color." },
+      { id: "quote-centered-minimal", label: "Centered Minimal", desc: "Accent bars above and below, centered italic text." },
+      { id: "quote-stat", label: "Stat + Quote", desc: "Large stat number left, quote text right, divider between." },
+    ],
+  },
+  {
+    id: "side-by-side",
+    label: "Side-by-Side",
+    desc: "Two-column comparisons and split layouts.",
+    icon: "columns",
+    color: "#67e8f9",
+    options: [
+      { id: "side-two-column-text", label: "Two Column Text", desc: "Two equal text columns with eyebrow labels and body text." },
+      { id: "side-text-visual", label: "Text + Visual", desc: "Text panel left with heading and body, image placeholder right." },
+      { id: "side-pro-con", label: "Pro / Con", desc: "Green pros column and red cons column with bullet items." },
+      { id: "side-two-stats", label: "Two Stats", desc: "Two metric cards side by side with different accent colors." },
+      { id: "side-option-vs", label: "Option A vs B", desc: "Two option cards with a 'vs' divider, one highlighted as recommended." },
+      { id: "side-image-caption", label: "Image + Caption", desc: "Two image placeholders with a shared caption row below." },
+    ],
+  },
+  {
+    id: "cta-takeaway",
+    label: "CTA / Takeaway",
+    desc: "Closing slides with next steps or calls to action.",
+    icon: "send",
+    color: "#f87171",
+    options: [
+      { id: "cta-single", label: "Single CTA", desc: "Eyebrow, headline, and accent pill button centered." },
+      { id: "cta-takeaways-list", label: "Key Takeaways List", desc: "Numbered list with accent circle badges and takeaway text." },
+      { id: "cta-next-steps", label: "Next Steps", desc: "Three step cards with accent numbers and descriptions." },
+      { id: "cta-full-accent", label: "Full Accent CTA", desc: "Accent gradient fill, white headline, ghost button." },
+      { id: "cta-thank-you", label: "Thank You + Contact", desc: "Large thank you, contact rows with accent dots." },
+      { id: "cta-summary", label: "Summary + CTA", desc: "Bullet summary left, question and button right." },
+      { id: "cta-big-question", label: "Big Question", desc: "Large rhetorical question with accent key phrase." },
+      { id: "cta-three-takeaways", label: "Three Takeaways", desc: "Stacked cards with colored left borders and bold numbers." },
+      { id: "cta-qr", label: "QR + CTA", desc: "QR placeholder left, headline and description right." },
+      { id: "cta-closing", label: "Closing Statement", desc: "Bold left-aligned statement with accent phrase." },
+      { id: "cta-two-ctas", label: "Two CTAs", desc: "Headline with two option cards — filled and outlined." },
+      { id: "cta-contact-card", label: "Contact Card", desc: "Centered card with avatar, name, title, and contact info." },
+    ],
+  },
+];
+
+// ── Prompt text for each option ──
+
+export const SLIDE_LAYOUT_PROMPT_MAP = {
+  // Title slides
+  "title-minimal-centered": 'title-slide: "minimal-centered" — centered layout, short accent bar above headline, headline 64–80px weight 800, subtitle 16px muted below, no logo, no metadata, no decoration.',
+  "title-left-anchored": 'title-slide: "left-anchored" — left-aligned, vertical accent bar left edge, eyebrow in monospace uppercase above headline, headline 56–72px weight 800, muted metadata line below, content block vertically centered.',
+  "title-split-panel": 'title-slide: "split-panel" — two columns, left 38% accent gradient with centered logo placeholder, right dark background with eyebrow label + headline 48–64px weight 800 + subtitle stacked vertically centered.',
+  "title-full-bleed-dark": 'title-slide: "full-bleed-dark" — near-black background, radial accent glow from lower-left, content bottom-anchored in lower 35%, eyebrow monospace uppercase above headline, headline 72–96px weight 900, short accent underline below, upper slide empty.',
+  "title-headline-only": 'title-slide: "headline-only" — dark background, single oversized headline centered, 96–120px weight 900, two lines max, first line white second line in accent color, no subtitle no decoration no metadata.',
+  "title-layered-card": 'title-slide: "layered-card" — dark background with dot-grid texture, centered frosted glass card 80% width with subtle border, inside card: eyebrow monospace uppercase + headline 40–56px weight 700 + muted subtitle, all centered.',
+
+  // Section dividers
+  "divider-number-title": 'section-divider: "number-title" — background color, large section number top-left in accent color 20% opacity, bold title below 40–48px weight 800, short accent underline below title.',
+  "divider-full-accent": 'section-divider: "full-accent" — full slide accent gradient background, monospace uppercase section label centered 10px, large bold title centered below 40–48px weight 800 white.',
+  "divider-horizontal-rule": 'section-divider: "horizontal-rule" — background color, full-width 1px lines above and below content, accent monospace label centered above title, title 36–44px weight 700 centered between lines.',
+  "divider-left-bar": 'section-divider: "left-bar" — background color, 6px full-height accent bar on left edge, monospace uppercase chapter label muted, title 36–44px weight 800 below, optional muted description below title, all left-aligned vertically centered.',
+  "divider-centered-minimal": 'section-divider: "centered-minimal" — background color, small accent circle icon centered (22px, outline + center dot), title 36–44px weight 700 centered below, small muted progress indicator below title.',
+  "divider-split-panel": 'section-divider: "split-panel" — left panel 45% background color with large faded accent number centered 20% opacity, right panel 55% surface color with left border, monospace accent label + title 32–40px weight 800, both panels vertically centered.',
+
+  // Chart / Data
+  "chart-bar": 'chart-data: "bar-chart" — background color, title top-left 20px weight 700, vertical bar chart below, bars in accent color equal width, category labels below each bar in muted text, bars bottom-anchored.',
+  "chart-line": 'chart-data: "line-chart" — background color, title top-left 20px weight 700, line chart below, accent color line 2.5px rounded joins, gradient fill below line accent 30% opacity to transparent, full width.',
+  "chart-donut": 'chart-data: "donut-chart" — background color, donut chart left half 12px stroke width, primary segment accent color, secondary segment secondary accent, remainder muted, center shows primary value bold large, legend right side with color dots and muted labels.',
+  "chart-stat-grid": 'chart-data: "stat-grid" — background color, title top-left, 2x2 grid of metric cards below, each card surface color with border, value 28–32px weight 900 in rotating accent colors, small muted label below each value.',
+  "chart-callout": 'chart-data: "chart-callout" — background color, title top-left, bar chart left two-thirds, right third two stacked callout cards in surface color with left accent border, each card large bold stat value weight 900 and small muted label below.',
+  "chart-table": 'chart-data: "comparison-table" — background color, title top-left, three-column table below, row labels muted left-aligned, primary column accent color header white text with bold accent values, competitor column surface color muted values, 1px gap between cells.',
+  "chart-progress": 'chart-data: "progress-bars" — background color, title top-left, stacked horizontal progress bars, label left and percentage value right above each bar, track border color 6px height rounded, fill cycles through accent colors per bar.',
+  "chart-before-after": 'chart-data: "before-after" — background color, title top-left, two equal cards side by side, before card surface color muted border with muted label and value, after card surface color accent border with accent label and value, both have small muted description below value.',
+  "chart-big-stat": 'chart-data: "single-big-stat" — background color, all centered, small monospace uppercase muted label above, single number 80–96px weight 900 accent color, small muted two-line description below, nothing else on the slide.',
+
+  // Quote / Highlight
+  "quote-big-mark": 'quote-highlight: "big-quote-mark" — background color, oversized quote mark top-left accent color 15% opacity, italic quote text centered 14–16px weight 600, muted attribution centered below with em dash.',
+  "quote-accent-border": 'quote-highlight: "accent-left-border" — background color, content centered vertically, 4px accent bar left edge of content block, italic quote text right of bar 14–16px weight 600, attribution below in accent color monospace uppercase.',
+  "quote-full-accent": 'quote-highlight: "full-accent-background" — full slide accent gradient, faded quote mark above text low opacity white, italic quote text centered white 14–16px weight 600, muted white attribution centered below.',
+  "quote-highlight-card": 'quote-highlight: "highlight-card" — background color, centered surface card with border and border-radius 10px, accent monospace uppercase eyebrow label top, bold quote text 14–16px weight 700, muted attribution bottom.',
+  "quote-split": 'quote-highlight: "split-quote" — left panel 40% accent gradient with centered avatar circle placeholder, speaker name white bold, role muted white below; right panel background color with faded quote mark top-left, italic quote text 12–14px weight 600.',
+  "quote-oversized": 'quote-highlight: "oversized-statement" — background color, small monospace uppercase muted eyebrow top-left, large bold statement below 28–36px weight 900 left-aligned, one key word or phrase in accent color, no quote marks no attribution.',
+  "quote-centered-minimal": 'quote-highlight: "centered-minimal" — background color, short 32px accent bar centered above quote, italic quote text centered 13–15px weight 500 line-height 1.6, short accent bar centered below, small muted attribution below that.',
+  "quote-stat": 'quote-highlight: "stat-quote" — background color, content centered vertically, left side large stat number accent color 48–56px weight 900 with small muted description below, thin vertical border divider, right side italic quote text 11–13px weight 500 with accent monospace attribution below.',
+
+  // Side-by-side
+  "side-two-column-text": 'side-by-side: "two-column-text" — two equal columns, each with monospace uppercase eyebrow label, body text below 12–14px weight 400, thin 1px vertical divider between columns, both vertically centered.',
+  "side-text-visual": 'side-by-side: "text-visual" — left column 50% with eyebrow label, heading 20–24px weight 800, body text below, right column 50% image placeholder with diagonal stripe pattern and centered icon, no gap between panels.',
+  "side-pro-con": 'side-by-side: "pro-con" — two equal columns, left column green header "Pros" with green bullet dots and item labels, right column red header "Cons" with red bullet dots and item labels, surface card background per column with border.',
+  "side-two-stats": 'side-by-side: "two-stats" — two equal metric cards, each surface color with border, large stat value 28–32px weight 900 centered, small muted label below, left card accent color value, right card secondary accent color value.',
+  "side-option-vs": 'side-by-side: "option-a-vs-b" — two option cards with centered "vs" circle divider between them, each card has heading and bullet features, recommended card has accent border and "Recommended" badge, other card has standard border.',
+  "side-image-caption": 'side-by-side: "image-caption" — two equal image placeholder panels with diagonal stripe pattern, shared caption row below spanning full width with muted text, clean edge alignment.',
+
+  // CTA / Takeaway
+  "cta-single": 'cta-takeaway: "single-cta" — background color, muted monospace uppercase eyebrow centered, bold headline centered 20–24px weight 800, single accent pill button centered below, button text white weight 700.',
+  "cta-takeaways-list": 'cta-takeaway: "key-takeaways-list" — background color, title top-left, numbered list stacked vertically, each item accent filled circle badge with white number, takeaway text right of badge in primary text color, even spacing between items.',
+  "cta-next-steps": 'cta-takeaway: "next-steps" — background color, title top-left, three equal surface cards in a row, each with large accent number top 20–24px weight 900, bold step heading below, small muted description below, border and border-radius 8px.',
+  "cta-full-accent": 'cta-takeaway: "full-accent-cta" — full slide accent gradient, muted white monospace uppercase eyebrow centered, bold white headline centered 22–28px weight 900, ghost button centered below white border and text rgba white background.',
+  "cta-thank-you": 'cta-takeaway: "thank-you-contact" — background color, large bold Thank You centered 32–40px weight 900, small muted supporting line below, two surface contact rows with accent dot left and muted contact text right, border and border-radius 6px on rows.',
+  "cta-summary": 'cta-takeaway: "summary-cta" — background color, thin vertical border divider, left side title and three accent dot bullet points muted text, right side short bold question primary text with accent pill button below, both sides vertically centered.',
+  "cta-big-question": 'cta-takeaway: "big-question" — background color, large bold rhetorical question centered 28–36px weight 900, first line primary text color, key word or phrase accent color, small muted supporting line centered below.',
+  "cta-three-takeaways": 'cta-takeaway: "three-takeaways" — background color, title top-left, three surface cards stacked, each with 3px left border in rotating accent colors, large bold number left matching accent color, takeaway text right primary text color, border-radius 8px.',
+  "cta-qr": 'cta-takeaway: "qr-cta" — background color, content centered, left side QR placeholder surface card rounded corners accent color grid pattern with muted caption below, right side bold headline 16–20px weight 800 with small muted description below.',
+  "cta-closing": 'cta-takeaway: "closing-statement" — background color, monospace uppercase muted eyebrow top-left, large bold left-aligned statement 20–26px weight 900, one key phrase in accent color, short accent line and small muted footer text below.',
+  "cta-two-ctas": 'cta-takeaway: "two-ctas" — background color, bold headline centered 16–20px weight 800, two equal cards below, left card accent fill white bold label and muted description, right card surface color accent border accent bold label and muted description, border-radius 8px both.',
+  "cta-contact-card": 'cta-takeaway: "contact-card" — background color, centered surface card with border border-radius 12px, avatar circle left accent gradient fill, name bold primary text right, muted title and company below name, accent color email and muted LinkedIn URL below, all vertically centered in card.',
+};
